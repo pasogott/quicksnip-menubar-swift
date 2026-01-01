@@ -109,6 +109,30 @@ final class SnippetTreeViewModel {
         NSWorkspace.shared.open(fileService.snippetsDirectory)
     }
 
+    func handleImport(_ result: Result<[URL], Error>) {
+        switch result {
+        case .success(let urls):
+            guard let url = urls.first else { return }
+            let importService = ImportExportService()
+            do {
+                let importResult: ImportResult
+                if url.pathExtension == "zip" {
+                    importResult = try importService.importFromZip(url)
+                } else {
+                    importResult = try importService.importFolder(url)
+                }
+                loadSnippets()
+                notificationService.showImportSuccess(count: importResult.imported)
+            } catch {
+                errorMessage = error.localizedDescription
+                notificationService.showError(title: "Import Failed", message: error.localizedDescription)
+            }
+        case .failure(let error):
+            errorMessage = error.localizedDescription
+            notificationService.showError(title: "Import Failed", message: error.localizedDescription)
+        }
+    }
+
     func openFullDiskAccessSettings() {
         textReplacementService.openFullDiskAccessSettings()
     }
