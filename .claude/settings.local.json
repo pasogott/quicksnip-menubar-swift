@@ -8,7 +8,8 @@
       "Bash(gh issue edit:*)",
       "Bash(git checkout:*)",
       "Bash(git pull:*)",
-      "Bash(gh issue close:*)"
+      "Bash(gh issue close:*)",
+      "Bash(xcodebuild:*)"
     ]
   }
 }
