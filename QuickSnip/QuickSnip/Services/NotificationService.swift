@@ -2,49 +2,57 @@ import Foundation
 import UserNotifications
 
 @MainActor
-final class NotificationService {
+final class NotificationService: NotificationServiceProtocol {
     static let shared = NotificationService()
 
-    private init() {}
+    private let center: UNUserNotificationCenter
+
+    init(center: UNUserNotificationCenter = .current()) {
+        self.center = center
+    }
 
     func requestAuthorization() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, _ in }
+        center.requestAuthorization(options: [.alert, .sound]) { _, _ in }
     }
 
-    func showSyncSuccess(count: Int) {
-        let content = UNMutableNotificationContent()
-        content.title = "Sync Complete"
-        content.body = "Synced \(count) snippet\(count == 1 ? "" : "s") to Text Replacement"
-        content.sound = .default
-
-        scheduleNotification(content: content, identifier: "sync-success")
-    }
-
-    func showImportSuccess(count: Int) {
-        let content = UNMutableNotificationContent()
-        content.title = "Import Complete"
-        content.body = "Imported \(count) snippet\(count == 1 ? "" : "s")"
-        content.sound = .default
-
-        scheduleNotification(content: content, identifier: "import-success")
+    func showSuccess(title: String, message: String) {
+        show(title: title, body: message, isCritical: false)
     }
 
     func showError(title: String, message: String) {
-        let content = UNMutableNotificationContent()
-        content.title = title
-        content.body = message
-        content.sound = .defaultCritical
-
-        scheduleNotification(content: content, identifier: "error-\(UUID().uuidString)")
+        show(title: title, body: message, isCritical: true)
     }
 
-    private func scheduleNotification(content: UNMutableNotificationContent, identifier: String) {
+    // MARK: - Convenience Methods
+
+    func showSyncSuccess(count: Int) {
+        showSuccess(
+            title: "Sync Complete",
+            message: "Synced \(count) snippet\(count == 1 ? "" : "s") to Text Replacement"
+        )
+    }
+
+    func showImportSuccess(count: Int) {
+        showSuccess(
+            title: "Import Complete",
+            message: "Imported \(count) snippet\(count == 1 ? "" : "s")"
+        )
+    }
+
+    // MARK: - Private
+
+    private func show(title: String, body: String, isCritical: Bool) {
+        let content = UNMutableNotificationContent()
+        content.title = title
+        content.body = body
+        content.sound = isCritical ? .defaultCritical : .default
+
         let request = UNNotificationRequest(
-            identifier: identifier,
+            identifier: UUID().uuidString,
             content: content,
             trigger: nil
         )
 
-        UNUserNotificationCenter.current().add(request)
+        center.add(request)
     }
 }

@@ -1,6 +1,6 @@
 import Foundation
 
-struct SnippetFileService: Sendable {
+struct SnippetFileService: SnippetFileServiceProtocol {
     let snippetsDirectory: URL
 
     private var fileManager: FileManager { FileManager.default }
