@@ -33,39 +33,33 @@ private struct FolderSection: View {
     var onSnippetEdit: ((Snippet) -> Void)?
 
     var body: some View {
-        DisclosureGroup(isExpanded: Binding(
-            get: { folder.isExpanded },
-            set: { folder.isExpanded = $0 }
-        )) {
-            ForEach(folder.snippets) { snippet in
-                SnippetRowView(
-                    snippet: snippet,
-                    onCopy: onSnippetCopy,
-                    onEdit: onSnippetEdit
+        VStack(spacing: 0) {
+            FolderRowView(
+                folder: folder,
+                isExpanded: Binding(
+                    get: { folder.isExpanded },
+                    set: { folder.isExpanded = $0 }
                 )
-                .padding(.leading, 12)
+            )
+
+            if folder.isExpanded {
+                ForEach(folder.snippets) { snippet in
+                    SnippetRowView(
+                        snippet: snippet,
+                        onCopy: onSnippetCopy,
+                        onEdit: onSnippetEdit
+                    )
+                    .padding(.leading, 20)
+                }
+                ForEach(folder.children) { child in
+                    FolderSection(
+                        folder: child,
+                        onSnippetCopy: onSnippetCopy,
+                        onSnippetEdit: onSnippetEdit
+                    )
+                    .padding(.leading, 20)
+                }
             }
-            ForEach(folder.children) { child in
-                FolderSection(
-                    folder: child,
-                    onSnippetCopy: onSnippetCopy,
-                    onSnippetEdit: onSnippetEdit
-                )
-                .padding(.leading, 12)
-            }
-        } label: {
-            HStack {
-                Image(systemName: "folder.fill")
-                    .foregroundStyle(.secondary)
-                Text(folder.name)
-                    .font(.body)
-                Spacer()
-                Text("\(folder.snippetCount)")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
         }
     }
 }
