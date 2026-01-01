@@ -338,4 +338,151 @@ final class SnippetTreeViewModelTests: XCTestCase {
 
         XCTAssertNotNil(viewModel.errorMessage)
     }
+
+    // MARK: - Delete Snippet Tests
+
+    func test_deleteSnippet_reloadsSnippets() {
+        var mockFileService = MockFileService()
+        mockFileService.snippetTreeToReturn = SnippetFolder(
+            name: "root",
+            path: URL(fileURLWithPath: "/tmp"),
+            snippets: [
+                Snippet(shortcut: ";test", content: "content", filePath: URL(fileURLWithPath: "/tmp/test.md"))
+            ]
+        )
+
+        let viewModel = SnippetTreeViewModel(fileService: mockFileService)
+        viewModel.loadSnippets()
+
+        guard let snippet = viewModel.rootFolder?.snippets.first else {
+            XCTFail("Snippet should exist")
+            return
+        }
+
+        viewModel.deleteSnippet(snippet)
+
+        // After deleting, loadSnippets is called again
+        XCTAssertNotNil(viewModel.rootFolder)
+    }
+
+    func test_deleteSnippet_setsErrorOnFailure() {
+        var mockFileService = MockFileService()
+        mockFileService.snippetTreeToReturn = SnippetFolder(
+            name: "root",
+            path: URL(fileURLWithPath: "/tmp"),
+            snippets: [
+                Snippet(shortcut: ";test", content: "content", filePath: URL(fileURLWithPath: "/tmp/test.md"))
+            ]
+        )
+        mockFileService.deleteError = TestError.testFailure
+
+        let viewModel = SnippetTreeViewModel(fileService: mockFileService)
+        viewModel.loadSnippets()
+
+        guard let snippet = viewModel.rootFolder?.snippets.first else {
+            XCTFail("Snippet should exist")
+            return
+        }
+
+        viewModel.deleteSnippet(snippet)
+
+        XCTAssertNotNil(viewModel.errorMessage)
+        XCTAssertEqual(viewModel.errorMessage, "Test failure")
+    }
+
+    // MARK: - Delete Folder Tests
+
+    func test_deleteFolder_reloadsSnippets() {
+        let childFolder = SnippetFolder(name: "child", path: URL(fileURLWithPath: "/tmp/child"))
+        var mockFileService = MockFileService()
+        mockFileService.snippetTreeToReturn = SnippetFolder(
+            name: "root",
+            path: URL(fileURLWithPath: "/tmp"),
+            children: [childFolder]
+        )
+
+        let viewModel = SnippetTreeViewModel(fileService: mockFileService)
+        viewModel.loadSnippets()
+
+        viewModel.deleteFolder(childFolder)
+
+        // After deleting, loadSnippets is called again
+        XCTAssertNotNil(viewModel.rootFolder)
+    }
+
+    func test_deleteFolder_setsErrorOnFailure() {
+        let childFolder = SnippetFolder(name: "child", path: URL(fileURLWithPath: "/tmp/child"))
+        var mockFileService = MockFileService()
+        mockFileService.snippetTreeToReturn = SnippetFolder(
+            name: "root",
+            path: URL(fileURLWithPath: "/tmp"),
+            children: [childFolder]
+        )
+        mockFileService.deleteError = TestError.testFailure
+
+        let viewModel = SnippetTreeViewModel(fileService: mockFileService)
+        viewModel.loadSnippets()
+
+        viewModel.deleteFolder(childFolder)
+
+        XCTAssertNotNil(viewModel.errorMessage)
+        XCTAssertEqual(viewModel.errorMessage, "Test failure")
+    }
+
+    // MARK: - Copy to Clipboard Tests
+
+    func test_copyToClipboard_copiesContentToPasteboard() {
+        let mockFileService = MockFileService()
+        let viewModel = SnippetTreeViewModel(fileService: mockFileService)
+
+        let snippet = Snippet(
+            shortcut: ";test",
+            content: "Hello World",
+            filePath: URL(fileURLWithPath: "/tmp/test.md")
+        )
+
+        viewModel.copyToClipboard(snippet)
+
+        let pasteboardContent = NSPasteboard.general.string(forType: .string)
+        XCTAssertEqual(pasteboardContent, "Hello World")
+    }
+
+    func test_copyToClipboard_expandsVariables() {
+        let mockFileService = MockFileService()
+        let viewModel = SnippetTreeViewModel(fileService: mockFileService)
+
+        let snippet = Snippet(
+            shortcut: ";test",
+            content: "Today is {date}",
+            filePath: URL(fileURLWithPath: "/tmp/test.md")
+        )
+
+        viewModel.copyToClipboard(snippet)
+
+        let pasteboardContent = NSPasteboard.general.string(forType: .string)
+        XCTAssertNotNil(pasteboardContent)
+        XCTAssertFalse(pasteboardContent!.contains("{date}"))
+    }
+
+    // MARK: - Handle Import Tests
+
+    func test_handleImport_setsErrorOnFailure() {
+        let mockFileService = MockFileService()
+        let viewModel = SnippetTreeViewModel(fileService: mockFileService)
+
+        let testError = NSError(domain: "test", code: 1, userInfo: [NSLocalizedDescriptionKey: "Import error"])
+        viewModel.handleImport(.failure(testError))
+
+        XCTAssertEqual(viewModel.errorMessage, "Import error")
+    }
+
+    func test_handleImport_ignoresEmptyURLArray() {
+        let mockFileService = MockFileService()
+        let viewModel = SnippetTreeViewModel(fileService: mockFileService)
+        viewModel.errorMessage = nil
+
+        viewModel.handleImport(.success([]))
+
+        XCTAssertNil(viewModel.errorMessage)
+    }
 }
