@@ -54,10 +54,9 @@ struct TextReplacementService: Sendable {
             if existingShortcuts.contains(shortcut) {
                 try db.execute("""
                     UPDATE ZTEXTREPLACEMENTENTRY
-                    SET ZPHRASE = '\(escapeSql(phrase))',
-                        ZTIMESTAMP = \(currentTimestamp())
-                    WHERE ZSHORTCUT = '\(escapeSql(shortcut))'
-                """)
+                    SET ZPHRASE = ?, ZTIMESTAMP = ?
+                    WHERE ZSHORTCUT = ?
+                """, parameters: [phrase, currentTimestamp(), shortcut])
                 updated += 1
             } else {
                 let maxZ: Int64 = try db.queryScalar("""
@@ -67,9 +66,8 @@ struct TextReplacementService: Sendable {
                 try db.execute("""
                     INSERT INTO ZTEXTREPLACEMENTENTRY
                     (Z_PK, Z_ENT, Z_OPT, ZSHORTCUT, ZPHRASE, ZTIMESTAMP, ZWASDELETED)
-                    VALUES
-                    (\(maxZ + 1), 1, 1, '\(escapeSql(shortcut))', '\(escapeSql(phrase))', \(currentTimestamp()), 0)
-                """)
+                    VALUES (?, 1, 1, ?, ?, ?, 0)
+                """, parameters: [maxZ + 1, shortcut, phrase, currentTimestamp()])
                 inserted += 1
             }
         }
@@ -82,10 +80,6 @@ struct TextReplacementService: Sendable {
     func openFullDiskAccessSettings() {
         let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles")!
         NSWorkspace.shared.open(url)
-    }
-
-    private func escapeSql(_ string: String) -> String {
-        string.replacingOccurrences(of: "'", with: "''")
     }
 
     private func currentTimestamp() -> Double {
