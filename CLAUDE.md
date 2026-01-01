@@ -24,6 +24,18 @@ cd QuickSnip && xcodebuild test -scheme QuickSnip -destination 'platform=macOS' 
 
 ## Development Workflow
 
+### Issue Workflow (Mandatory)
+
+Always follow this workflow for every issue:
+
+1. **Assign issue** - `gh issue edit <number> --add-assignee @me`
+2. **Create branch** - `git checkout -b feature/US-XXX-description`
+3. **Implement** - Write code, build, verify
+4. **Update docs** - Update relevant documentation if needed
+5. **Create PR** - `gh pr create --base development`
+6. **Merge PR** - `gh pr merge <number> --squash --delete-branch`
+7. **Update CHANGELOG** - Add entry on development branch
+
 ### Working on an Issue
 
 1. **Pick up an issue**
@@ -55,6 +67,13 @@ cd QuickSnip && xcodebuild test -scheme QuickSnip -destination 'platform=macOS' 
    ```bash
    git push -u origin feature/US-001-init-xcode-project
    gh pr create --base development --title "[US-001] Initialize Xcode Project" --body "Closes #<issue-number>"
+   ```
+
+5. **Merge PR and update changelog**
+   ```bash
+   gh pr merge <pr-number> --squash --delete-branch
+   git checkout development && git pull
+   # Update CHANGELOG.md with the changes
    ```
 
 ### Branch Strategy
