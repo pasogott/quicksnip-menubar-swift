@@ -32,6 +32,9 @@ struct MenuBarContentView: View {
             footerView
         }
         .frame(width: 320, height: 440)
+        .background {
+            keyboardShortcuts
+        }
         .onAppear {
             viewModel.loadSnippets()
         }
@@ -67,7 +70,7 @@ struct MenuBarContentView: View {
                 Image(systemName: viewModel.syncStatus.symbolName)
             }
             .buttonStyle(.borderless)
-            .help(viewModel.syncStatus.description)
+            .help("\(viewModel.syncStatus.description) (⌘R)")
 
             Button(action: viewModel.openSnippetsFolder) {
                 Image(systemName: "folder")
@@ -103,8 +106,10 @@ struct MenuBarContentView: View {
     private var actionBar: some View {
         HStack(spacing: 12) {
             Menu {
-                Button("New Snippet", action: { showingNewSnippetSheet = true })
-                Button("New Folder", action: { showingNewFolderSheet = true })
+                Button("New Snippet") { showingNewSnippetSheet = true }
+                    .keyboardShortcut("n", modifiers: .command)
+                Button("New Folder") { showingNewFolderSheet = true }
+                    .keyboardShortcut("n", modifiers: [.command, .shift])
             } label: {
                 Label("New", systemImage: "plus")
             }
@@ -189,6 +194,24 @@ struct MenuBarContentView: View {
                 }
             }
         }
+    }
+
+    @ViewBuilder
+    private var keyboardShortcuts: some View {
+        // Cmd+N: New Snippet
+        Button("") { showingNewSnippetSheet = true }
+            .keyboardShortcut("n", modifiers: .command)
+            .hidden()
+
+        // Cmd+Shift+N: New Folder
+        Button("") { showingNewFolderSheet = true }
+            .keyboardShortcut("n", modifiers: [.command, .shift])
+            .hidden()
+
+        // Cmd+R: Sync to Text Replacement
+        Button("") { viewModel.syncToTextReplacement() }
+            .keyboardShortcut("r", modifiers: .command)
+            .hidden()
     }
 
     private var footerView: some View {
