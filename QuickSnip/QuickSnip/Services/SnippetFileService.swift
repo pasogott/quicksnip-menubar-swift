@@ -125,14 +125,11 @@ struct SnippetFileService: SnippetFileServiceProtocol {
 
 enum SnippetFileError: LocalizedError {
     case failedToCreateSnippet
-    case folderAlreadyExists
 
     var errorDescription: String? {
         switch self {
         case .failedToCreateSnippet:
             return "Failed to create snippet file"
-        case .folderAlreadyExists:
-            return "A folder with this name already exists"
         }
     }
 }
