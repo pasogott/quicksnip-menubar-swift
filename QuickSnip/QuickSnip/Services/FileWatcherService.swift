@@ -6,7 +6,7 @@ protocol FileWatcherDelegate: AnyObject {
 }
 
 @MainActor
-final class FileWatcherService {
+final class FileWatcherService: FileWatcherServiceProtocol {
     weak var delegate: FileWatcherDelegate?
 
     private let path: String
@@ -14,7 +14,7 @@ final class FileWatcherService {
     private nonisolated(unsafe) var eventStream: FSEventStreamRef?
     private var debounceTask: Task<Void, Never>?
 
-    private var isRunning = false
+    var isRunning: Bool { eventStream != nil }
 
     init(path: String, debounceInterval: TimeInterval = 0.5) {
         self.path = path
@@ -34,7 +34,7 @@ final class FileWatcherService {
     }
 
     func start() {
-        guard !isRunning else { return }
+        guard eventStream == nil else { return }
 
         let pathsToWatch = [path] as CFArray
 
@@ -73,11 +73,10 @@ final class FileWatcherService {
         eventStream = stream
         FSEventStreamSetDispatchQueue(stream, DispatchQueue.main)
         FSEventStreamStart(stream)
-        isRunning = true
     }
 
     func stop() {
-        guard isRunning, let stream = eventStream else { return }
+        guard let stream = eventStream else { return }
 
         debounceTask?.cancel()
         debounceTask = nil
@@ -86,7 +85,6 @@ final class FileWatcherService {
         FSEventStreamInvalidate(stream)
         FSEventStreamRelease(stream)
         eventStream = nil
-        isRunning = false
     }
 
     private func handleEvent() {

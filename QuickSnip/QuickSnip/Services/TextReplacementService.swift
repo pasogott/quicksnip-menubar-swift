@@ -6,7 +6,7 @@ struct TextReplacement: Equatable {
     let phrase: String
 }
 
-struct TextReplacementService: Sendable {
+struct TextReplacementService: TextReplacementServiceProtocol {
     static let databaseURL: URL = {
         let home = FileManager.default.homeDirectoryForCurrentUser
         return home
