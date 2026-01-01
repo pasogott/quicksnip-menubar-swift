@@ -2,12 +2,13 @@ import SwiftUI
 
 struct FolderRowView: View {
     let folder: SnippetFolder
-    @Binding var isExpanded: Bool
+    let isExpanded: Bool
+    let onToggle: () -> Void
 
     var body: some View {
         Button {
             withAnimation(.easeInOut(duration: 0.2)) {
-                isExpanded.toggle()
+                onToggle()
             }
         } label: {
             HStack(spacing: 6) {
@@ -54,7 +55,8 @@ struct FolderRowView: View {
                     Snippet(shortcut: ";sig", content: "Best regards", filePath: URL(fileURLWithPath: "/tmp/sig.md"))
                 ]
             ),
-            isExpanded: .constant(true)
+            isExpanded: true,
+            onToggle: {}
         )
 
         FolderRowView(
@@ -65,7 +67,8 @@ struct FolderRowView: View {
                     Snippet(shortcut: ";addr", content: "123 Main St", filePath: URL(fileURLWithPath: "/tmp/addr.md"))
                 ]
             ),
-            isExpanded: .constant(false)
+            isExpanded: false,
+            onToggle: {}
         )
     }
     .frame(width: 320)

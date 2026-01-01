@@ -1,63 +1,37 @@
 import Foundation
-import SwiftUI
 
-@Observable
-final class SnippetFolder: Identifiable, Hashable {
+struct SnippetFolder: Identifiable, Hashable {
     let id: UUID
-    var name: String
+    let name: String
     let path: URL
-    var children: [SnippetFolder]
-    var snippets: [Snippet]
-    var isExpanded: Bool
-    weak var parent: SnippetFolder?
-
-    var allSnippets: [Snippet] {
-        var result = snippets
-        for child in children {
-            result.append(contentsOf: child.allSnippets)
-        }
-        return result
-    }
-
-    var allFolders: [SnippetFolder] {
-        var result = [self]
-        for child in children {
-            result.append(contentsOf: child.allFolders)
-        }
-        return result
-    }
-
-    var snippetCount: Int {
-        allSnippets.count
-    }
+    let children: [SnippetFolder]
+    let snippets: [Snippet]
 
     init(
         id: UUID = UUID(),
         name: String,
         path: URL,
         children: [SnippetFolder] = [],
-        snippets: [Snippet] = [],
-        isExpanded: Bool = false,
-        parent: SnippetFolder? = nil
+        snippets: [Snippet] = []
     ) {
         self.id = id
         self.name = name
         self.path = path
         self.children = children
         self.snippets = snippets
-        self.isExpanded = isExpanded
-        self.parent = parent
+    }
+}
 
-        for child in self.children {
-            child.parent = self
-        }
+extension SnippetFolder {
+    var allSnippets: [Snippet] {
+        snippets + children.flatMap(\.allSnippets)
     }
 
-    static func == (lhs: SnippetFolder, rhs: SnippetFolder) -> Bool {
-        lhs.id == rhs.id
+    var allFolders: [SnippetFolder] {
+        [self] + children.flatMap(\.allFolders)
     }
 
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+    var snippetCount: Int {
+        allSnippets.count
     }
 }

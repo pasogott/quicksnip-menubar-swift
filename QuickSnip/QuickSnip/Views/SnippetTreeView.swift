@@ -2,6 +2,7 @@ import SwiftUI
 
 struct SnippetTreeView: View {
     let folder: SnippetFolder
+    @Bindable var viewModel: SnippetTreeViewModel
     let onSnippetCopy: (Snippet) -> Void
     var onSnippetEdit: ((Snippet) -> Void)?
 
@@ -18,8 +19,10 @@ struct SnippetTreeView: View {
                 ForEach(folder.children) { childFolder in
                     FolderSection(
                         folder: childFolder,
+                        viewModel: viewModel,
                         onSnippetCopy: onSnippetCopy,
-                        onSnippetEdit: onSnippetEdit
+                        onSnippetEdit: onSnippetEdit,
+                        forceExpanded: !viewModel.searchText.isEmpty
                     )
                 }
             }
@@ -29,20 +32,24 @@ struct SnippetTreeView: View {
 
 private struct FolderSection: View {
     let folder: SnippetFolder
+    @Bindable var viewModel: SnippetTreeViewModel
     let onSnippetCopy: (Snippet) -> Void
     var onSnippetEdit: ((Snippet) -> Void)?
+    var forceExpanded: Bool = false
+
+    private var isExpanded: Bool {
+        forceExpanded || viewModel.isExpanded(folder)
+    }
 
     var body: some View {
         VStack(spacing: 0) {
             FolderRowView(
                 folder: folder,
-                isExpanded: Binding(
-                    get: { folder.isExpanded },
-                    set: { folder.isExpanded = $0 }
-                )
+                isExpanded: isExpanded,
+                onToggle: { viewModel.toggleExpanded(folder) }
             )
 
-            if folder.isExpanded {
+            if isExpanded {
                 ForEach(folder.snippets) { snippet in
                     SnippetRowView(
                         snippet: snippet,
@@ -54,8 +61,10 @@ private struct FolderSection: View {
                 ForEach(folder.children) { child in
                     FolderSection(
                         folder: child,
+                        viewModel: viewModel,
                         onSnippetCopy: onSnippetCopy,
-                        onSnippetEdit: onSnippetEdit
+                        onSnippetEdit: onSnippetEdit,
+                        forceExpanded: forceExpanded
                     )
                     .padding(.leading, 20)
                 }
@@ -92,6 +101,7 @@ private struct FolderSection: View {
 
     return SnippetTreeView(
         folder: folder,
+        viewModel: SnippetTreeViewModel(),
         onSnippetCopy: { snippet in
             print("Copy: \(snippet.shortcut)")
         },

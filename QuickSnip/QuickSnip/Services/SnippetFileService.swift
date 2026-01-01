@@ -18,10 +18,10 @@ struct SnippetFileService: SnippetFileServiceProtocol {
 
     func loadSnippetTree() throws -> SnippetFolder {
         try ensureSnippetsDirectoryExists()
-        return try loadFolder(at: snippetsDirectory, parent: nil)
+        return try loadFolder(at: snippetsDirectory)
     }
 
-    private func loadFolder(at url: URL, parent: SnippetFolder?) throws -> SnippetFolder {
+    private func loadFolder(at url: URL) throws -> SnippetFolder {
         let contents = try fileManager.contentsOfDirectory(
             at: url,
             includingPropertiesForKeys: [.isDirectoryKey, .contentModificationDateKey],
@@ -36,7 +36,7 @@ struct SnippetFileService: SnippetFileServiceProtocol {
             let isDirectory = resourceValues.isDirectory ?? false
 
             if isDirectory {
-                let subfolder = try loadFolder(at: item, parent: nil)
+                let subfolder = try loadFolder(at: item)
                 subfolders.append(subfolder)
             } else if item.pathExtension == "md" {
                 if let snippet = snippetFromFile(item) {
@@ -48,19 +48,12 @@ struct SnippetFileService: SnippetFileServiceProtocol {
         subfolders.sort { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
         snippets.sort { $0.fileName.localizedCaseInsensitiveCompare($1.fileName) == .orderedAscending }
 
-        let folder = SnippetFolder(
+        return SnippetFolder(
             name: url.lastPathComponent,
             path: url,
             children: subfolders,
-            snippets: snippets,
-            parent: parent
+            snippets: snippets
         )
-
-        for subfolder in folder.children {
-            subfolder.parent = folder
-        }
-
-        return folder
     }
 
     func createSnippet(named name: String, shortcut: String, in folder: SnippetFolder) throws -> Snippet {
@@ -89,8 +82,7 @@ struct SnippetFileService: SnippetFileServiceProtocol {
 
         return SnippetFolder(
             name: folderName,
-            path: folderURL,
-            parent: parent
+            path: folderURL
         )
     }
 
