@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- QuickSnipApp: Main entry point with MenuBarExtra and Settings scene
+- MenuBarContentView: Full menubar popover with snippet tree, sync, and copy functionality
+- SettingsWindowView: Settings UI with launch at login and auto-sync toggles
 - SettingsViewModel: Settings state with launch at login (SMAppService) and auto-sync toggle
 - SnippetTreeViewModel: Main app state management with file watcher integration and search filtering
 - ImportExportService: Zip export/import and folder import with conflict handling
