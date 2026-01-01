@@ -45,7 +45,12 @@ struct SnippetRowView: View {
             showingPreview = true
         }
         .popover(isPresented: $showingPreview, arrowEdge: .trailing) {
-            SnippetPreviewPopover(snippet: snippet)
+            SnippetPreviewView(
+                snippet: snippet,
+                onCopy: onCopy,
+                onEdit: onEdit,
+                onDismiss: { showingPreview = false }
+            )
         }
     }
 
@@ -79,48 +84,6 @@ struct SnippetRowView: View {
                 .help("Edit snippet")
             }
         }
-    }
-}
-
-private struct SnippetPreviewPopover: View {
-    let snippet: Snippet
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack {
-                Text(snippet.fileName)
-                    .font(.headline)
-                Spacer()
-                Text(snippet.shortcut)
-                    .font(.caption)
-                    .padding(.horizontal, 6)
-                    .padding(.vertical, 2)
-                    .background(.quaternary)
-                    .clipShape(Capsule())
-            }
-
-            Divider()
-
-            ScrollView {
-                Text(snippet.content)
-                    .font(.body)
-                    .textSelection(.enabled)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-            .frame(maxHeight: 200)
-
-            if let category = snippet.category {
-                HStack {
-                    Image(systemName: "tag")
-                        .font(.caption)
-                    Text(category)
-                        .font(.caption)
-                }
-                .foregroundStyle(.secondary)
-            }
-        }
-        .padding()
-        .frame(width: 300)
     }
 }
 
