@@ -22,12 +22,19 @@ final class SettingsViewModel {
         SnippetFileService.defaultSnippetsDirectory
     }
 
+    var hasFullDiskAccess: Bool {
+        textReplacementService.hasAccess
+    }
+
+    private let textReplacementService: TextReplacementServiceProtocol
+
     private enum Keys {
         static let launchAtLogin = "launchAtLogin"
         static let autoSync = "autoSync"
     }
 
-    init() {
+    init(textReplacementService: TextReplacementServiceProtocol = TextReplacementService()) {
+        self.textReplacementService = textReplacementService
         self.launchAtLogin = UserDefaults.standard.bool(forKey: Keys.launchAtLogin)
         self.autoSync = UserDefaults.standard.bool(forKey: Keys.autoSync)
 
@@ -58,5 +65,9 @@ final class SettingsViewModel {
     func resetToDefaults() {
         launchAtLogin = false
         autoSync = false
+    }
+
+    func openFullDiskAccessSettings() {
+        textReplacementService.openFullDiskAccessSettings()
     }
 }

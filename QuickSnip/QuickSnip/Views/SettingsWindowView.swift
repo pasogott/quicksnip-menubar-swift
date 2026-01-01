@@ -3,8 +3,6 @@ import SwiftUI
 struct SettingsWindowView: View {
     @Bindable var viewModel: SettingsViewModel
 
-    private let textReplacementService = TextReplacementService()
-
     var body: some View {
         Form {
             Section("General") {
@@ -27,7 +25,7 @@ struct SettingsWindowView: View {
 
             Section("Text Replacement") {
                 HStack {
-                    if textReplacementService.hasAccess {
+                    if viewModel.hasFullDiskAccess {
                         Label("Full Disk Access granted", systemImage: "checkmark.circle.fill")
                             .foregroundStyle(.green)
                     } else {
@@ -38,7 +36,7 @@ struct SettingsWindowView: View {
                     Spacer()
 
                     Button("Open Settings") {
-                        textReplacementService.openFullDiskAccessSettings()
+                        viewModel.openFullDiskAccessSettings()
                     }
                 }
 
