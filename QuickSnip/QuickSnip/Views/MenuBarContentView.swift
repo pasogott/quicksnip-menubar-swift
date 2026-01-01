@@ -142,17 +142,21 @@ struct MenuBarContentView: View {
             guard let url = urls.first else { return }
             let importService = ImportExportService()
             do {
+                let importResult: ImportResult
                 if url.pathExtension == "zip" {
-                    _ = try importService.importFromZip(url)
+                    importResult = try importService.importFromZip(url)
                 } else {
-                    _ = try importService.importFolder(url)
+                    importResult = try importService.importFolder(url)
                 }
                 viewModel.loadSnippets()
+                NotificationService.shared.showImportSuccess(count: importResult.imported)
             } catch {
                 viewModel.errorMessage = error.localizedDescription
+                NotificationService.shared.showError(title: "Import Failed", message: error.localizedDescription)
             }
         case .failure(let error):
             viewModel.errorMessage = error.localizedDescription
+            NotificationService.shared.showError(title: "Import Failed", message: error.localizedDescription)
         }
     }
 

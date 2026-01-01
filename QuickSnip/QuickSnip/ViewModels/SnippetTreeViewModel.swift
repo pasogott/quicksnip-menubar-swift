@@ -12,6 +12,7 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
 
     private let fileService = SnippetFileService()
     private let textReplacementService = TextReplacementService()
+    private let notificationService = NotificationService.shared
     private var fileWatcher: FileWatcherService?
 
     var filteredRootFolder: SnippetFolder? {
@@ -45,6 +46,7 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
             let snippets = root.allSnippets.filter { $0.enabled }
             let result = try textReplacementService.syncSnippets(snippets)
             syncStatus = .synced
+            notificationService.showSyncSuccess(count: result.total)
 
             Task {
                 try? await Task.sleep(for: .seconds(2))
@@ -59,6 +61,7 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
         } catch {
             syncStatus = .error(error.localizedDescription)
             errorMessage = error.localizedDescription
+            notificationService.showError(title: "Sync Failed", message: error.localizedDescription)
         }
     }
 
