@@ -9,6 +9,7 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
     var syncStatus: SyncStatus = .idle
     var searchText: String = ""
     var errorMessage: String?
+    var expandedFolderIDs: Set<UUID> = []
 
     private let fileService = SnippetFileService()
     private let textReplacementService = TextReplacementService()
@@ -119,6 +120,18 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
         loadSnippets()
     }
 
+    func isExpanded(_ folder: SnippetFolder) -> Bool {
+        expandedFolderIDs.contains(folder.id)
+    }
+
+    func toggleExpanded(_ folder: SnippetFolder) {
+        if expandedFolderIDs.contains(folder.id) {
+            expandedFolderIDs.remove(folder.id)
+        } else {
+            expandedFolderIDs.insert(folder.id)
+        }
+    }
+
     private func setupFileWatcher() {
         fileWatcher = FileWatcherService(url: fileService.snippetsDirectory)
         fileWatcher?.delegate = self
@@ -147,9 +160,7 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
             name: folder.name,
             path: folder.path,
             children: matchingChildren,
-            snippets: matchingSnippets,
-            isExpanded: true,
-            parent: folder.parent
+            snippets: matchingSnippets
         )
     }
 }

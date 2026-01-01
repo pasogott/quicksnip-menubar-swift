@@ -183,6 +183,7 @@ struct MenuBarContentView: View {
             if let root = viewModel.filteredRootFolder {
                 SnippetTreeView(
                     folder: root,
+                    viewModel: viewModel,
                     onSnippetCopy: { snippet in
                         viewModel.copyToClipboard(snippet)
                     },
@@ -323,7 +324,7 @@ private struct NewFolderSheet: View {
 struct SnippetExportDocument: FileDocument {
     static var readableContentTypes: [UTType] { [.zip] }
 
-    nonisolated(unsafe) let folder: SnippetFolder?
+    let folder: SnippetFolder?
 
     init(folder: SnippetFolder?) {
         self.folder = folder
