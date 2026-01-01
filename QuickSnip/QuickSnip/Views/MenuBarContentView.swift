@@ -172,9 +172,15 @@ struct MenuBarContentView: View {
     private var contentView: some View {
         Group {
             if let root = viewModel.filteredRootFolder {
-                SnippetTreeView(folder: root) { snippet in
-                    viewModel.copyToClipboard(snippet)
-                }
+                SnippetTreeView(
+                    folder: root,
+                    onSnippetCopy: { snippet in
+                        viewModel.copyToClipboard(snippet)
+                    },
+                    onSnippetEdit: { snippet in
+                        NSWorkspace.shared.open(snippet.filePath)
+                    }
+                )
             } else {
                 ContentUnavailableView {
                     Label("No Snippets", systemImage: "doc.text")
