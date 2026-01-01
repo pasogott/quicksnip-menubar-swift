@@ -150,7 +150,7 @@ final class SQLiteDatabase {
     }
 }
 
-enum SQLiteError: LocalizedError {
+enum SQLiteError: LocalizedError, Equatable {
     case openFailed(String)
     case notOpen
     case prepareFailed(String)
