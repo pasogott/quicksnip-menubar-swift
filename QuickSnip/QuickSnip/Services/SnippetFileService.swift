@@ -1,16 +1,19 @@
 import Foundation
 
 struct SnippetFileService: SnippetFileServiceProtocol {
+    static let defaultSnippetsDirectory: URL = {
+        FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent(".snippets", isDirectory: true)
+    }()
+
     let snippetsDirectory: URL
 
     private var fileManager: FileManager { FileManager.default }
 
-    init() {
-        let home = FileManager.default.homeDirectoryForCurrentUser
-        self.snippetsDirectory = home.appendingPathComponent(".snippets", isDirectory: true)
+    init(snippetsDirectory: URL = defaultSnippetsDirectory) {
+        self.snippetsDirectory = snippetsDirectory
     }
 
-    func ensureSnippetsDirectoryExists() throws {
+    private func ensureSnippetsDirectoryExists() throws {
         if !fileManager.fileExists(atPath: snippetsDirectory.path) {
             try fileManager.createDirectory(at: snippetsDirectory, withIntermediateDirectories: true)
         }

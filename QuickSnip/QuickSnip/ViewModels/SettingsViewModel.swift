@@ -19,8 +19,7 @@ final class SettingsViewModel {
     }
 
     var snippetsDirectory: URL {
-        let home = FileManager.default.homeDirectoryForCurrentUser
-        return home.appendingPathComponent(".snippets", isDirectory: true)
+        SnippetFileService.defaultSnippetsDirectory
     }
 
     private enum Keys {
