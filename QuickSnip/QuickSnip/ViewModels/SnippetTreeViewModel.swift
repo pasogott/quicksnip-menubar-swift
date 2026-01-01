@@ -4,7 +4,7 @@ import Observation
 
 @MainActor
 @Observable
-final class SnippetTreeViewModel: FileWatcherDelegate {
+final class SnippetTreeViewModel {
     var rootFolder: SnippetFolder?
     var syncStatus: SyncStatus = .idle
     var searchText: String = ""
@@ -113,10 +113,6 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
         textReplacementService.openFullDiskAccessSettings()
     }
 
-    func fileWatcherDidDetectChanges(_ watcher: FileWatcherService) {
-        loadSnippets()
-    }
-
     func isExpanded(_ folder: SnippetFolder) -> Bool {
         expandedFolderIDs.contains(folder.id)
     }
@@ -138,8 +134,9 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
     }
 
     private func setupFileWatcher() {
-        fileWatcher = FileWatcherService(url: fileService.snippetsDirectory)
-        fileWatcher?.delegate = self
+        fileWatcher = FileWatcherService(url: fileService.snippetsDirectory) { [weak self] in
+            self?.loadSnippets()
+        }
         fileWatcher?.start()
     }
 

@@ -39,10 +39,29 @@ struct MenuBarContentView: View {
             viewModel.loadSnippets()
         }
         .sheet(isPresented: $showingNewSnippetSheet) {
-            NewSnippetSheet(viewModel: viewModel, isPresented: $showingNewSnippetSheet)
+            InputDialog(
+                title: "New Snippet",
+                fields: [
+                    .init(label: "Name", placeholder: "Name"),
+                    .init(label: "Shortcut", placeholder: "Shortcut (e.g., ;sig)")
+                ],
+                isPresented: $showingNewSnippetSheet
+            ) { values in
+                if let root = viewModel.rootFolder {
+                    viewModel.createNewSnippet(named: values[0], shortcut: values[1], in: root)
+                }
+            }
         }
         .sheet(isPresented: $showingNewFolderSheet) {
-            NewFolderSheet(viewModel: viewModel, isPresented: $showingNewFolderSheet)
+            InputDialog(
+                title: "New Folder",
+                fields: [.init(label: "Name", placeholder: "Folder Name")],
+                isPresented: $showingNewFolderSheet
+            ) { values in
+                if let root = viewModel.rootFolder {
+                    viewModel.createNewFolder(named: values[0], in: root)
+                }
+            }
         }
         .fileImporter(
             isPresented: $showingImportPicker,
@@ -295,43 +314,6 @@ private struct InputDialog: View {
         }
         .padding()
         .frame(width: 280)
-    }
-}
-
-private struct NewSnippetSheet: View {
-    let viewModel: SnippetTreeViewModel
-    @Binding var isPresented: Bool
-
-    var body: some View {
-        InputDialog(
-            title: "New Snippet",
-            fields: [
-                .init(label: "Name", placeholder: "Name"),
-                .init(label: "Shortcut", placeholder: "Shortcut (e.g., ;sig)")
-            ],
-            isPresented: $isPresented
-        ) { values in
-            if let root = viewModel.rootFolder {
-                viewModel.createNewSnippet(named: values[0], shortcut: values[1], in: root)
-            }
-        }
-    }
-}
-
-private struct NewFolderSheet: View {
-    let viewModel: SnippetTreeViewModel
-    @Binding var isPresented: Bool
-
-    var body: some View {
-        InputDialog(
-            title: "New Folder",
-            fields: [.init(label: "Name", placeholder: "Folder Name")],
-            isPresented: $isPresented
-        ) { values in
-            if let root = viewModel.rootFolder {
-                viewModel.createNewFolder(named: values[0], in: root)
-            }
-        }
     }
 }
 
