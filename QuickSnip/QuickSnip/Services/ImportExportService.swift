@@ -4,9 +4,8 @@ struct ImportExportService {
     private let fileManager = FileManager.default
     private let snippetsDirectory: URL
 
-    init() {
-        let home = FileManager.default.homeDirectoryForCurrentUser
-        snippetsDirectory = home.appendingPathComponent(".snippets", isDirectory: true)
+    init(snippetsDirectory: URL = SnippetFileService.defaultSnippetsDirectory) {
+        self.snippetsDirectory = snippetsDirectory
     }
 
     func exportToZip(folder: SnippetFolder, destination: URL) throws {

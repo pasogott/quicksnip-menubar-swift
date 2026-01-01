@@ -68,7 +68,7 @@ struct MenuBarContentView: View {
             allowedContentTypes: [.zip, .folder],
             allowsMultipleSelection: false
         ) { result in
-            handleImport(result)
+            viewModel.handleImport(result)
         }
         .fileExporter(
             isPresented: $showingExportPicker,
@@ -151,30 +151,6 @@ struct MenuBarContentView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 6)
-    }
-
-    private func handleImport(_ result: Result<[URL], Error>) {
-        switch result {
-        case .success(let urls):
-            guard let url = urls.first else { return }
-            let importService = ImportExportService()
-            do {
-                let importResult: ImportResult
-                if url.pathExtension == "zip" {
-                    importResult = try importService.importFromZip(url)
-                } else {
-                    importResult = try importService.importFolder(url)
-                }
-                viewModel.loadSnippets()
-                NotificationService.shared.showImportSuccess(count: importResult.imported)
-            } catch {
-                viewModel.errorMessage = error.localizedDescription
-                NotificationService.shared.showError(title: "Import Failed", message: error.localizedDescription)
-            }
-        case .failure(let error):
-            viewModel.errorMessage = error.localizedDescription
-            NotificationService.shared.showError(title: "Import Failed", message: error.localizedDescription)
-        }
     }
 
     private func errorBanner(_ message: String) -> some View {

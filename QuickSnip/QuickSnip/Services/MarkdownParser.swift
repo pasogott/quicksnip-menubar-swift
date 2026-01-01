@@ -1,6 +1,6 @@
 import Foundation
 
-struct MarkdownParser {
+enum MarkdownParser {
     struct ParsedSnippet {
         let shortcut: String
         let content: String
