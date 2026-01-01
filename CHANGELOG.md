@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- FolderRowView: Folder row with disclosure indicator, icon, name, and count badge
 - SnippetRowView: Snippet row with hover actions, long-press preview, and edit support
 - SnippetTreeView: Recursive tree component for folder hierarchy display
 - QuickSnipApp: Main entry point with MenuBarExtra and Settings scene
