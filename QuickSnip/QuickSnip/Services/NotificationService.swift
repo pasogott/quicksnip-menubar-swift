@@ -2,7 +2,7 @@ import Foundation
 import UserNotifications
 
 @MainActor
-final class NotificationService: NotificationServiceProtocol {
+final class NotificationService {
     static let shared = NotificationService()
 
     private let center: UNUserNotificationCenter

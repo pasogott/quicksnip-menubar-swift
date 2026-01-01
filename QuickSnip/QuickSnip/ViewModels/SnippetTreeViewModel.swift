@@ -4,16 +4,16 @@ import Observation
 
 @MainActor
 @Observable
-final class SnippetTreeViewModel: FileWatcherDelegate {
+final class SnippetTreeViewModel {
     var rootFolder: SnippetFolder?
     var syncStatus: SyncStatus = .idle
     var searchText: String = ""
     var errorMessage: String?
     var expandedFolderIDs: Set<UUID> = []
 
-    private let fileService = SnippetFileService()
-    private let textReplacementService = TextReplacementService()
-    private let notificationService = NotificationService.shared
+    private let fileService: SnippetFileServiceProtocol
+    private let textReplacementService: TextReplacementServiceProtocol
+    private let notificationService: NotificationService
     private var fileWatcher: FileWatcherService?
 
     var filteredRootFolder: SnippetFolder? {
@@ -25,7 +25,14 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
         textReplacementService.hasAccess
     }
 
-    init() {
+    init(
+        fileService: SnippetFileServiceProtocol = SnippetFileService(),
+        textReplacementService: TextReplacementServiceProtocol = TextReplacementService(),
+        notificationService: NotificationService = .shared
+    ) {
+        self.fileService = fileService
+        self.textReplacementService = textReplacementService
+        self.notificationService = notificationService
         setupFileWatcher()
     }
 
@@ -106,10 +113,6 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
         textReplacementService.openFullDiskAccessSettings()
     }
 
-    func fileWatcherDidDetectChanges(_ watcher: FileWatcherService) {
-        loadSnippets()
-    }
-
     func isExpanded(_ folder: SnippetFolder) -> Bool {
         expandedFolderIDs.contains(folder.id)
     }
@@ -131,8 +134,9 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
     }
 
     private func setupFileWatcher() {
-        fileWatcher = FileWatcherService(url: fileService.snippetsDirectory)
-        fileWatcher?.delegate = self
+        fileWatcher = FileWatcherService(url: fileService.snippetsDirectory) { [weak self] in
+            self?.loadSnippets()
+        }
         fileWatcher?.start()
     }
 

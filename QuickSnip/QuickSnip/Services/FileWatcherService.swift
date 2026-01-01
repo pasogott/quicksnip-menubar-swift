@@ -1,28 +1,19 @@
 import Foundation
 
 @MainActor
-protocol FileWatcherDelegate: AnyObject {
-    func fileWatcherDidDetectChanges(_ watcher: FileWatcherService)
-}
-
-@MainActor
-final class FileWatcherService: FileWatcherServiceProtocol {
-    weak var delegate: FileWatcherDelegate?
-
+final class FileWatcherService {
     private let path: String
     private let debounceInterval: TimeInterval
+    private let onChange: () -> Void
     private nonisolated(unsafe) var eventStream: FSEventStreamRef?
     private var debounceTask: Task<Void, Never>?
 
     var isRunning: Bool { eventStream != nil }
 
-    init(path: String, debounceInterval: TimeInterval = 0.5) {
-        self.path = path
+    init(url: URL, debounceInterval: TimeInterval = 0.5, onChange: @escaping () -> Void) {
+        self.path = url.path
         self.debounceInterval = debounceInterval
-    }
-
-    convenience init(url: URL, debounceInterval: TimeInterval = 0.5) {
-        self.init(path: url.path, debounceInterval: debounceInterval)
+        self.onChange = onChange
     }
 
     deinit {
@@ -93,7 +84,7 @@ final class FileWatcherService: FileWatcherServiceProtocol {
         debounceTask = Task {
             try? await Task.sleep(for: .milliseconds(Int(debounceInterval * 1000)))
             guard !Task.isCancelled else { return }
-            delegate?.fileWatcherDidDetectChanges(self)
+            onChange()
         }
     }
 }

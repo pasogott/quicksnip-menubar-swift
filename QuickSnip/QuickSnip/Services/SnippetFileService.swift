@@ -94,17 +94,9 @@ struct SnippetFileService: SnippetFileServiceProtocol {
         try fileManager.removeItem(at: folder.path)
     }
 
-    func saveSnippet(_ snippet: Snippet) throws {
-        let content = MarkdownParser.generateMarkdown(
-            shortcut: snippet.shortcut,
-            content: snippet.content,
-            category: snippet.category,
-            enabled: snippet.enabled
-        )
-        try content.write(to: snippet.filePath, atomically: true, encoding: .utf8)
-    }
+    // MARK: - Private
 
-    func snippetFromFile(_ fileURL: URL) -> Snippet? {
+    private func snippetFromFile(_ fileURL: URL) -> Snippet? {
         guard fileManager.fileExists(atPath: fileURL.path) else { return nil }
         guard let parsed = MarkdownParser.parse(fileAt: fileURL) else { return nil }
 
