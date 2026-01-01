@@ -138,7 +138,6 @@ struct ImportResult {
 enum ImportExportError: LocalizedError {
     case exportFailed
     case invalidZipFile
-    case importFailed
 
     var errorDescription: String? {
         switch self {
@@ -146,8 +145,6 @@ enum ImportExportError: LocalizedError {
             return "Failed to create zip archive"
         case .invalidZipFile:
             return "Invalid or corrupted zip file"
-        case .importFailed:
-            return "Failed to import files"
         }
     }
 }
