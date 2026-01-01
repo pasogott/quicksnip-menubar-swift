@@ -6,7 +6,7 @@ struct QuickSnipApp: App {
     @State private var settingsViewModel = SettingsViewModel()
 
     var body: some Scene {
-        MenuBarExtra("QuickSnip", systemImage: "doc.on.clipboard") {
+        MenuBarExtra("QuickSnip", image: "MenuBarIcon") {
             MenuBarContentView(viewModel: snippetTreeViewModel)
                 .environment(settingsViewModel)
         }
