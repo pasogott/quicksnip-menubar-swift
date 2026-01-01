@@ -30,11 +30,9 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
     }
 
     func loadSnippets() {
-        do {
+        perform {
             rootFolder = try fileService.loadSnippetTree()
             errorMessage = nil
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
@@ -73,38 +71,30 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
     }
 
     func createNewSnippet(named name: String, shortcut: String, in folder: SnippetFolder) {
-        do {
+        perform {
             _ = try fileService.createSnippet(named: name, shortcut: shortcut, in: folder)
             loadSnippets()
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
     func createNewFolder(named name: String, in parent: SnippetFolder) {
-        do {
+        perform {
             _ = try fileService.createFolder(named: name, in: parent)
             loadSnippets()
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
     func deleteSnippet(_ snippet: Snippet) {
-        do {
+        perform {
             try fileService.deleteSnippet(snippet)
             loadSnippets()
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
     func deleteFolder(_ folder: SnippetFolder) {
-        do {
+        perform {
             try fileService.deleteFolder(folder)
             loadSnippets()
-        } catch {
-            errorMessage = error.localizedDescription
         }
     }
 
@@ -129,6 +119,14 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
             expandedFolderIDs.remove(folder.id)
         } else {
             expandedFolderIDs.insert(folder.id)
+        }
+    }
+
+    private func perform(_ operation: () throws -> Void) {
+        do {
+            try operation()
+        } catch {
+            errorMessage = error.localizedDescription
         }
     }
 
