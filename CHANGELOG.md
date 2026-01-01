@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Security
+- Fix SQL injection vulnerability in TextReplacementService with parameterized queries
+
 ### Added
 - NotificationService: System notifications for sync success, import complete, and errors
 - Keyboard shortcuts: Cmd+N (new snippet), Cmd+Shift+N (new folder), Cmd+R (sync), Cmd+, (settings)
