@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- App icons: Menubar template icon and app icon in all macOS sizes
 - SettingsWindowView: Settings UI with Text Replacement access status, About section, and reset option
 - SnippetPreviewView: Long-press preview popover with copy/edit buttons and full content
 - FolderRowView: Folder row with disclosure indicator, icon, name, and count badge
