@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- NotificationService: System notifications for sync success, import complete, and errors
 - Keyboard shortcuts: Cmd+N (new snippet), Cmd+Shift+N (new folder), Cmd+R (sync), Cmd+, (settings)
 - App icons: Menubar template icon and app icon in all macOS sizes
 - SettingsWindowView: Settings UI with Text Replacement access status, About section, and reset option
