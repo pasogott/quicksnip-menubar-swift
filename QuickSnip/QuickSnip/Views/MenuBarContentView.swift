@@ -172,15 +172,8 @@ struct MenuBarContentView: View {
     private var contentView: some View {
         Group {
             if let root = viewModel.filteredRootFolder {
-                ScrollView {
-                    LazyVStack(spacing: 0) {
-                        ForEach(root.snippets) { snippet in
-                            SnippetRowButton(snippet: snippet, viewModel: viewModel)
-                        }
-                        ForEach(root.children) { folder in
-                            FolderView(folder: folder, viewModel: viewModel)
-                        }
-                    }
+                SnippetTreeView(folder: root) { snippet in
+                    viewModel.copyToClipboard(snippet)
                 }
             } else {
                 ContentUnavailableView {
@@ -215,70 +208,6 @@ struct MenuBarContentView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
-    }
-}
-
-private struct SnippetRowButton: View {
-    let snippet: Snippet
-    let viewModel: SnippetTreeViewModel
-
-    var body: some View {
-        Button {
-            viewModel.copyToClipboard(snippet)
-        } label: {
-            HStack {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(snippet.fileName)
-                        .font(.body)
-                    Text(snippet.shortcut)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-                Spacer()
-                if !snippet.enabled {
-                    Image(systemName: "pause.circle")
-                        .foregroundStyle(.secondary)
-                }
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-private struct FolderView: View {
-    let folder: SnippetFolder
-    let viewModel: SnippetTreeViewModel
-
-    var body: some View {
-        DisclosureGroup(isExpanded: Binding(
-            get: { folder.isExpanded },
-            set: { folder.isExpanded = $0 }
-        )) {
-            ForEach(folder.snippets) { snippet in
-                SnippetRowButton(snippet: snippet, viewModel: viewModel)
-                    .padding(.leading, 12)
-            }
-            ForEach(folder.children) { child in
-                FolderView(folder: child, viewModel: viewModel)
-                    .padding(.leading, 12)
-            }
-        } label: {
-            HStack {
-                Image(systemName: "folder.fill")
-                    .foregroundStyle(.secondary)
-                Text(folder.name)
-                    .font(.body)
-                Spacer()
-                Text("\(folder.snippetCount)")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-        }
     }
 }
 
