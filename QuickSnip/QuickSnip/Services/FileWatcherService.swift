@@ -6,7 +6,7 @@ protocol FileWatcherDelegate: AnyObject {
 }
 
 @MainActor
-final class FileWatcherService: FileWatcherServiceProtocol {
+final class FileWatcherService {
     weak var delegate: FileWatcherDelegate?
 
     private let path: String

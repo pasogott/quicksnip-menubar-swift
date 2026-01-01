@@ -11,9 +11,9 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
     var errorMessage: String?
     var expandedFolderIDs: Set<UUID> = []
 
-    private let fileService = SnippetFileService()
-    private let textReplacementService = TextReplacementService()
-    private let notificationService = NotificationService.shared
+    private let fileService: SnippetFileServiceProtocol
+    private let textReplacementService: TextReplacementServiceProtocol
+    private let notificationService: NotificationService
     private var fileWatcher: FileWatcherService?
 
     var filteredRootFolder: SnippetFolder? {
@@ -25,7 +25,14 @@ final class SnippetTreeViewModel: FileWatcherDelegate {
         textReplacementService.hasAccess
     }
 
-    init() {
+    init(
+        fileService: SnippetFileServiceProtocol = SnippetFileService(),
+        textReplacementService: TextReplacementServiceProtocol = TextReplacementService(),
+        notificationService: NotificationService = .shared
+    ) {
+        self.fileService = fileService
+        self.textReplacementService = textReplacementService
+        self.notificationService = notificationService
         setupFileWatcher()
     }
 
