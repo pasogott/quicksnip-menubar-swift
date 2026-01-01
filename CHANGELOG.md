@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- SettingsViewModel: Settings state with launch at login (SMAppService) and auto-sync toggle
 - SnippetTreeViewModel: Main app state management with file watcher integration and search filtering
 - ImportExportService: Zip export/import and folder import with conflict handling
 - VariableService: Variable expansion for {date}, {time}, {clipboard}
