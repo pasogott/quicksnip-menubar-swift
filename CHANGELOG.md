@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 ### Added
+- SnippetTreeView: Recursive tree component for folder hierarchy display
 - QuickSnipApp: Main entry point with MenuBarExtra and Settings scene
 - MenuBarContentView: Full menubar popover with snippet tree, search, sync, import/export, and copy functionality
 - SettingsWindowView: Settings UI with launch at login and auto-sync toggles
