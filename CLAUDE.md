@@ -17,7 +17,58 @@ cd QuickSnip && xcodebuild -scheme QuickSnip -configuration Debug
 
 # Run tests
 cd QuickSnip && xcodebuild test -scheme QuickSnip -destination 'platform=macOS'
+
+# Run single test
+cd QuickSnip && xcodebuild test -scheme QuickSnip -destination 'platform=macOS' -only-testing:QuickSnipTests/TestClassName/testMethodName
 ```
+
+## Development Workflow
+
+### Working on an Issue
+
+1. **Pick up an issue**
+   ```bash
+   # List open issues
+   gh issue list --state open
+
+   # View issue details
+   gh issue view <issue-number>
+
+   # Assign yourself
+   gh issue edit <issue-number> --add-assignee @me
+   ```
+
+2. **Create a feature branch**
+   ```bash
+   # Branch naming: feature/US-XXX-short-description or fix/issue-number-description
+   git checkout development
+   git pull origin development
+   git checkout -b feature/US-001-init-xcode-project
+   ```
+
+3. **Implement and build**
+   ```bash
+   cd QuickSnip && xcodebuild -scheme QuickSnip -configuration Debug
+   ```
+
+4. **Create a PR to development**
+   ```bash
+   git push -u origin feature/US-001-init-xcode-project
+   gh pr create --base development --title "[US-001] Initialize Xcode Project" --body "Closes #<issue-number>"
+   ```
+
+### Branch Strategy
+
+- `main` - production releases only
+- `development` - integration branch, all PRs target this
+- `feature/US-XXX-*` - feature branches from user stories
+- `fix/*` - bug fix branches
+
+### PR Requirements
+
+- All PRs must target `development`
+- CI must pass (build + tests)
+- Link the issue in the PR body with `Closes #<issue-number>`
 
 ## Architecture
 
@@ -28,13 +79,29 @@ cd QuickSnip && xcodebuild test -scheme QuickSnip -destination 'platform=macOS'
 
 **Data Flow:**
 ```
-QuickSnipApp (MenuBarExtra)
-    └── SnippetTreeViewModel (main state)
-            ├── SnippetFileService      → ~/.snippets/*.md
-            ├── FileWatcherService      → FSEvents for live reload
-            ├── TextReplacementService  → ~/Library/KeyboardServices/TextReplacements.db
-            ├── VariableService         → expands {date}, {time}, {clipboard}
-            └── ImportExportService     → .zip import/export
+QuickSnip/
+├── QuickSnipApp.swift              # @main, MenuBarExtra scene
+├── Models/
+│   ├── Snippet.swift               # Snippet data model
+│   ├── SnippetFolder.swift         # Folder tree node
+│   └── SyncStatus.swift            # Sync state enum
+├── Services/
+│   ├── SnippetFileService.swift    # File I/O, tree loading
+│   ├── MarkdownParser.swift        # YAML frontmatter extraction
+│   ├── FileWatcherService.swift    # FSEvents for live reload
+│   ├── TextReplacementService.swift # SQLite sync to macOS
+│   ├── VariableService.swift       # {date}, {time}, {clipboard}
+│   └── ImportExportService.swift   # Zip import/export
+├── ViewModels/
+│   ├── SnippetTreeViewModel.swift  # Main app state
+│   └── SettingsViewModel.swift     # Settings state
+└── Views/
+    ├── MenuBarContentView.swift    # Main popover
+    ├── SnippetTreeView.swift       # Recursive tree
+    ├── SnippetRowView.swift        # Snippet row
+    ├── FolderRowView.swift         # Folder row
+    ├── SnippetPreviewView.swift    # Long-press preview
+    └── SettingsWindowView.swift    # Settings window
 ```
 
 **Key Technical Decisions:**
@@ -65,3 +132,17 @@ Pascal
 
 - `LSUIElement: true` - menubar only, no dock icon
 - App Sandbox disabled for database and file access
+
+## GitHub Labels
+
+- `user-story` - feature implementation
+- `bug` - bug reports
+- `epic:setup` - Epic 1: Project Setup
+- `epic:models` - Epic 2: Core Models
+- `epic:services` - Epic 3: File Services
+- `epic:text-replacement` - Epic 4: Text Replacement Integration
+- `epic:variables` - Epic 5: Variable Expansion
+- `epic:import-export` - Epic 6: Import/Export
+- `epic:viewmodels` - Epic 7: ViewModels
+- `epic:views` - Epic 8: UI Views
+- `epic:polish` - Epic 9: Polish

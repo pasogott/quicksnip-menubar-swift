@@ -1,0 +1,64 @@
+name: User Story
+description: A feature request in user story format
+title: "[US-XXX] "
+labels: ["user-story"]
+body:
+  - type: input
+    id: story-id
+    attributes:
+      label: Story ID
+      description: The user story identifier (e.g., US-001)
+      placeholder: US-001
+    validations:
+      required: true
+
+  - type: dropdown
+    id: epic
+    attributes:
+      label: Epic
+      description: Which epic does this story belong to?
+      options:
+        - "Epic 1: Project Setup"
+        - "Epic 2: Core Models"
+        - "Epic 3: File Services"
+        - "Epic 4: Text Replacement Integration"
+        - "Epic 5: Variable Expansion"
+        - "Epic 6: Import/Export"
+        - "Epic 7: ViewModels"
+        - "Epic 8: UI Views"
+        - "Epic 9: Polish"
+    validations:
+      required: true
+
+  - type: textarea
+    id: user-story
+    attributes:
+      label: User Story
+      description: The user story in As a / I want / So that format
+      placeholder: |
+        **As a** [role]
+        **I want** [feature]
+        **So that** [benefit]
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: Acceptance Criteria
+      description: Checklist of requirements for this story to be complete
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+        - [ ] Criterion 3
+    validations:
+      required: true
+
+  - type: textarea
+    id: technical-notes
+    attributes:
+      label: Technical Notes
+      description: Any implementation details, architecture considerations, or references
+      placeholder: Optional technical context
+    validations:
+      required: false

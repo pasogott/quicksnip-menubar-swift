@@ -1,0 +1,36 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: sudo xcode-select -s /Applications/Xcode_16.app
+
+      - name: Build Release
+        run: |
+          cd QuickSnip
+          xcodebuild -scheme QuickSnip -configuration Release -archivePath build/QuickSnip.xcarchive archive
+
+      - name: Export App
+        run: |
+          cd QuickSnip
+          xcodebuild -exportArchive -archivePath build/QuickSnip.xcarchive -exportPath build/export -exportOptionsPlist ExportOptions.plist
+
+      - name: Create DMG
+        run: |
+          cd QuickSnip/build/export
+          hdiutil create -volname "QuickSnip" -srcfolder QuickSnip.app -ov -format UDZO QuickSnip.dmg
+
+      - name: Upload Release Asset
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuickSnip-${{ github.ref_name }}
+          path: QuickSnip/build/export/QuickSnip.dmg
