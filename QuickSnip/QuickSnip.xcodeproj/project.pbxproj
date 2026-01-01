@@ -9,8 +9,19 @@
 /* Begin PBXBuildFile section */
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		2A0000000000000000000020 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2A000000000000000000000A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 2A0000000000000000000002;
+			remoteInfo = QuickSnip;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		2A0000000000000000000001 /* QuickSnip.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = QuickSnip.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A0000000000000000000021 /* QuickSnipTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = QuickSnipTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -32,10 +43,22 @@
 			path = QuickSnip;
 			sourceTree = "<group>";
 		};
+		2A0000000000000000000022 /* QuickSnipTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = QuickSnipTests;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		2A0000000000000000000004 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2A0000000000000000000023 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -49,6 +72,7 @@
 			isa = PBXGroup;
 			children = (
 				2A0000000000000000000003 /* QuickSnip */,
+				2A0000000000000000000022 /* QuickSnipTests */,
 				2A0000000000000000000006 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -57,6 +81,7 @@
 			isa = PBXGroup;
 			children = (
 				2A0000000000000000000001 /* QuickSnip.app */,
+				2A0000000000000000000021 /* QuickSnipTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -86,6 +111,29 @@
 			productReference = 2A0000000000000000000001 /* QuickSnip.app */;
 			productType = "com.apple.product-type.application";
 		};
+		2A0000000000000000000024 /* QuickSnipTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 2A0000000000000000000025 /* Build configuration list for PBXNativeTarget "QuickSnipTests" */;
+			buildPhases = (
+				2A0000000000000000000026 /* Sources */,
+				2A0000000000000000000023 /* Frameworks */,
+				2A0000000000000000000027 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				2A0000000000000000000028 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				2A0000000000000000000022 /* QuickSnipTests */,
+			);
+			name = QuickSnipTests;
+			packageProductDependencies = (
+			);
+			productName = QuickSnipTests;
+			productReference = 2A0000000000000000000021 /* QuickSnipTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -98,6 +146,10 @@
 				TargetAttributes = {
 					2A0000000000000000000002 = {
 						CreatedOnToolsVersion = 16.0;
+					};
+					2A0000000000000000000024 = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = 2A0000000000000000000002;
 					};
 				};
 			};
@@ -116,12 +168,20 @@
 			projectRoot = "";
 			targets = (
 				2A0000000000000000000002 /* QuickSnip */,
+				2A0000000000000000000024 /* QuickSnipTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		2A0000000000000000000009 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2A0000000000000000000027 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -138,7 +198,22 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		2A0000000000000000000026 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		2A0000000000000000000028 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 2A0000000000000000000002 /* QuickSnip */;
+			targetProxy = 2A0000000000000000000020 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		2A000000000000000000000C /* Debug */ = {
@@ -321,6 +396,40 @@
 			};
 			name = Release;
 		};
+		2A0000000000000000000029 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.quicksnip.QuickSnipTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QuickSnip.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/QuickSnip";
+			};
+			name = Debug;
+		};
+		2A000000000000000000002A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.quicksnip.QuickSnipTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 6.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/QuickSnip.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/QuickSnip";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -338,6 +447,15 @@
 			buildConfigurations = (
 				2A000000000000000000000C /* Debug */,
 				2A000000000000000000000D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		2A0000000000000000000025 /* Build configuration list for PBXNativeTarget "QuickSnipTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				2A0000000000000000000029 /* Debug */,
+				2A000000000000000000002A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
