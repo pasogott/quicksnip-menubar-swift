@@ -245,22 +245,39 @@ struct MenuBarContentView: View {
     }
 }
 
-private struct NewSnippetSheet: View {
-    let viewModel: SnippetTreeViewModel
+private struct InputDialog: View {
+    let title: String
+    let fields: [Field]
+    let onCreate: ([String]) -> Void
     @Binding var isPresented: Bool
-    @State private var name = ""
-    @State private var shortcut = ""
+    @State private var values: [String]
+
+    struct Field {
+        let label: String
+        let placeholder: String
+    }
+
+    init(title: String, fields: [Field], isPresented: Binding<Bool>, onCreate: @escaping ([String]) -> Void) {
+        self.title = title
+        self.fields = fields
+        self._isPresented = isPresented
+        self.onCreate = onCreate
+        self._values = State(initialValue: Array(repeating: "", count: fields.count))
+    }
+
+    private var isValid: Bool {
+        values.allSatisfy { !$0.isEmpty }
+    }
 
     var body: some View {
         VStack(spacing: 16) {
-            Text("New Snippet")
+            Text(title)
                 .font(.headline)
 
-            TextField("Name", text: $name)
-                .textFieldStyle(.roundedBorder)
-
-            TextField("Shortcut (e.g., ;sig)", text: $shortcut)
-                .textFieldStyle(.roundedBorder)
+            ForEach(fields.indices, id: \.self) { index in
+                TextField(fields[index].placeholder, text: $values[index])
+                    .textFieldStyle(.roundedBorder)
+            }
 
             HStack {
                 Button("Cancel") {
@@ -271,13 +288,11 @@ private struct NewSnippetSheet: View {
                 Spacer()
 
                 Button("Create") {
-                    if let root = viewModel.rootFolder {
-                        viewModel.createNewSnippet(named: name, shortcut: shortcut, in: root)
-                    }
+                    onCreate(values)
                     isPresented = false
                 }
                 .keyboardShortcut(.defaultAction)
-                .disabled(name.isEmpty || shortcut.isEmpty)
+                .disabled(!isValid)
             }
         }
         .padding()
@@ -285,39 +300,40 @@ private struct NewSnippetSheet: View {
     }
 }
 
+private struct NewSnippetSheet: View {
+    let viewModel: SnippetTreeViewModel
+    @Binding var isPresented: Bool
+
+    var body: some View {
+        InputDialog(
+            title: "New Snippet",
+            fields: [
+                .init(label: "Name", placeholder: "Name"),
+                .init(label: "Shortcut", placeholder: "Shortcut (e.g., ;sig)")
+            ],
+            isPresented: $isPresented
+        ) { values in
+            if let root = viewModel.rootFolder {
+                viewModel.createNewSnippet(named: values[0], shortcut: values[1], in: root)
+            }
+        }
+    }
+}
+
 private struct NewFolderSheet: View {
     let viewModel: SnippetTreeViewModel
     @Binding var isPresented: Bool
-    @State private var name = ""
 
     var body: some View {
-        VStack(spacing: 16) {
-            Text("New Folder")
-                .font(.headline)
-
-            TextField("Folder Name", text: $name)
-                .textFieldStyle(.roundedBorder)
-
-            HStack {
-                Button("Cancel") {
-                    isPresented = false
-                }
-                .keyboardShortcut(.cancelAction)
-
-                Spacer()
-
-                Button("Create") {
-                    if let root = viewModel.rootFolder {
-                        viewModel.createNewFolder(named: name, in: root)
-                    }
-                    isPresented = false
-                }
-                .keyboardShortcut(.defaultAction)
-                .disabled(name.isEmpty)
+        InputDialog(
+            title: "New Folder",
+            fields: [.init(label: "Name", placeholder: "Folder Name")],
+            isPresented: $isPresented
+        ) { values in
+            if let root = viewModel.rootFolder {
+                viewModel.createNewFolder(named: values[0], in: root)
             }
         }
-        .padding()
-        .frame(width: 280)
     }
 }
 
