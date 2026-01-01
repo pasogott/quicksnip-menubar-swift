@@ -3,6 +3,8 @@ import SwiftUI
 struct SettingsWindowView: View {
     @Bindable var viewModel: SettingsViewModel
 
+    private let textReplacementService = TextReplacementService()
+
     var body: some View {
         Form {
             Section("General") {
@@ -23,6 +25,42 @@ struct SettingsWindowView: View {
                 }
             }
 
+            Section("Text Replacement") {
+                HStack {
+                    if textReplacementService.hasAccess {
+                        Label("Full Disk Access granted", systemImage: "checkmark.circle.fill")
+                            .foregroundStyle(.green)
+                    } else {
+                        Label("Full Disk Access required", systemImage: "exclamationmark.triangle.fill")
+                            .foregroundStyle(.orange)
+                    }
+
+                    Spacer()
+
+                    Button("Open Settings") {
+                        textReplacementService.openFullDiskAccessSettings()
+                    }
+                }
+
+                Text("QuickSnip needs Full Disk Access to sync snippets to macOS Text Replacement.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+
+            Section("About") {
+                LabeledContent("Version") {
+                    Text(appVersion)
+                        .foregroundStyle(.secondary)
+                }
+
+                LabeledContent("Build") {
+                    Text(buildNumber)
+                        .foregroundStyle(.secondary)
+                }
+
+                Link("GitHub Repository", destination: URL(string: "https://github.com/pasogott/quicksnip-menubar-swift")!)
+            }
+
             Section {
                 Button("Reset to Defaults", role: .destructive) {
                     viewModel.resetToDefaults()
@@ -30,7 +68,15 @@ struct SettingsWindowView: View {
             }
         }
         .formStyle(.grouped)
-        .frame(width: 450, height: 280)
+        .frame(width: 450, height: 420)
+    }
+
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.0"
+    }
+
+    private var buildNumber: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String ?? "1"
     }
 }
 
