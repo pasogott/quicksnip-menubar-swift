@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.app
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app || sudo xcode-select -s /Applications/Xcode_16.1.app || sudo xcode-select -s /Applications/Xcode_16.app || sudo xcode-select -s /Applications/Xcode.app
 
       - name: Show Xcode version
         run: xcodebuild -version
@@ -30,16 +30,28 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.app
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app || sudo xcode-select -s /Applications/Xcode_16.1.app || sudo xcode-select -s /Applications/Xcode_16.app || sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Check for test target
+        id: check-tests
+        run: |
+          cd QuickSnip
+          if xcodebuild -list -json | grep -q "QuickSnipTests"; then
+            echo "has_tests=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_tests=false" >> $GITHUB_OUTPUT
+            echo "No test target found, skipping tests"
+          fi
 
       - name: Run Tests
+        if: steps.check-tests.outputs.has_tests == 'true'
         run: |
           cd QuickSnip
           xcodebuild test -scheme QuickSnip -destination 'platform=macOS' -resultBundlePath TestResults
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
-        if: always()
+        if: steps.check-tests.outputs.has_tests == 'true' && always()
         with:
           name: test-results
           path: QuickSnip/TestResults

@@ -12,17 +12,21 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.app
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app || sudo xcode-select -s /Applications/Xcode_16.1.app || sudo xcode-select -s /Applications/Xcode_16.app || sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Show Xcode version
+        run: xcodebuild -version
 
       - name: Build Release
         run: |
           cd QuickSnip
-          xcodebuild -scheme QuickSnip -configuration Release -archivePath build/QuickSnip.xcarchive archive
+          xcodebuild -scheme QuickSnip -configuration Release -archivePath build/QuickSnip.xcarchive archive CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO
 
       - name: Export App
         run: |
           cd QuickSnip
-          xcodebuild -exportArchive -archivePath build/QuickSnip.xcarchive -exportPath build/export -exportOptionsPlist ExportOptions.plist
+          mkdir -p build/export
+          cp -R build/QuickSnip.xcarchive/Products/Applications/QuickSnip.app build/export/
 
       - name: Create DMG
         run: |
@@ -34,3 +38,11 @@ jobs:
         with:
           name: QuickSnip-${{ github.ref_name }}
           path: QuickSnip/build/export/QuickSnip.dmg
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: QuickSnip/build/export/QuickSnip.dmg
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
