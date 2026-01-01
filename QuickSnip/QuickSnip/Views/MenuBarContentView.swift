@@ -106,10 +106,8 @@ struct MenuBarContentView: View {
     private var actionBar: some View {
         HStack(spacing: 12) {
             Menu {
-                Button("New Snippet") { showingNewSnippetSheet = true }
-                    .keyboardShortcut("n", modifiers: .command)
-                Button("New Folder") { showingNewFolderSheet = true }
-                    .keyboardShortcut("n", modifiers: [.command, .shift])
+                Button("New Snippet (⌘N)") { showingNewSnippetSheet = true }
+                Button("New Folder (⇧⌘N)") { showingNewFolderSheet = true }
             } label: {
                 Label("New", systemImage: "plus")
             }
