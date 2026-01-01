@@ -39,7 +39,7 @@ struct SnippetFileService: SnippetFileServiceProtocol {
                 let subfolder = try loadFolder(at: item, parent: nil)
                 subfolders.append(subfolder)
             } else if item.pathExtension == "md" {
-                if let snippet = Snippet(from: item) {
+                if let snippet = snippetFromFile(item) {
                     snippets.append(snippet)
                 }
             }
@@ -74,7 +74,7 @@ struct SnippetFileService: SnippetFileServiceProtocol {
 
         try content.write(to: fileURL, atomically: true, encoding: .utf8)
 
-        guard let snippet = Snippet(from: fileURL) else {
+        guard let snippet = snippetFromFile(fileURL) else {
             throw SnippetFileError.failedToCreateSnippet
         }
 
@@ -110,6 +110,23 @@ struct SnippetFileService: SnippetFileServiceProtocol {
             enabled: snippet.enabled
         )
         try content.write(to: snippet.filePath, atomically: true, encoding: .utf8)
+    }
+
+    func snippetFromFile(_ fileURL: URL) -> Snippet? {
+        guard fileManager.fileExists(atPath: fileURL.path) else { return nil }
+        guard let parsed = MarkdownParser.parse(fileAt: fileURL) else { return nil }
+
+        let attributes = try? fileManager.attributesOfItem(atPath: fileURL.path)
+        let modDate = attributes?[.modificationDate] as? Date ?? Date()
+
+        return Snippet(
+            shortcut: parsed.shortcut,
+            content: parsed.content,
+            category: parsed.category,
+            enabled: parsed.enabled,
+            filePath: fileURL,
+            lastModified: modDate
+        )
     }
 
     private func sanitizeFileName(_ name: String) -> String {

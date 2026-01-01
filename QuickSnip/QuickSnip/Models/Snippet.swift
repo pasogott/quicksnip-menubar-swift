@@ -30,25 +30,4 @@ struct Snippet: Identifiable, Codable, Hashable {
         self.filePath = filePath
         self.lastModified = lastModified
     }
-
-    init?(from fileURL: URL) {
-        guard FileManager.default.fileExists(atPath: fileURL.path) else {
-            return nil
-        }
-
-        guard let parsed = MarkdownParser.parse(fileAt: fileURL) else {
-            return nil
-        }
-
-        let attributes = try? FileManager.default.attributesOfItem(atPath: fileURL.path)
-        let modDate = attributes?[.modificationDate] as? Date ?? Date()
-
-        self.id = UUID()
-        self.shortcut = parsed.shortcut
-        self.content = parsed.content
-        self.category = parsed.category
-        self.enabled = parsed.enabled
-        self.filePath = fileURL
-        self.lastModified = modDate
-    }
 }

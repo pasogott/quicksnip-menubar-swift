@@ -10,6 +10,7 @@ protocol SnippetFileServiceProtocol: Sendable {
     func createFolder(named name: String, in parent: SnippetFolder) throws -> SnippetFolder
     func deleteSnippet(_ snippet: Snippet) throws
     func deleteFolder(_ folder: SnippetFolder) throws
+    func snippetFromFile(_ fileURL: URL) -> Snippet?
 }
 
 // MARK: - Text Replacement Protocol
