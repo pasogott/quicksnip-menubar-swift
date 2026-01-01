@@ -36,18 +36,50 @@ final class SQLiteDatabase {
         db = nil
     }
 
-    func execute(_ sql: String) throws {
+    func execute(_ sql: String, parameters: [Any?] = []) throws {
         guard let database = db else {
             throw SQLiteError.notOpen
         }
 
-        var errorPointer: UnsafeMutablePointer<CChar>?
-        let result = sqlite3_exec(database, sql, nil, nil, &errorPointer)
+        var statement: OpaquePointer?
+        let prepareResult = sqlite3_prepare_v2(database, sql, -1, &statement, nil)
 
-        if result != SQLITE_OK {
-            let message = errorPointer.map { String(cString: $0) } ?? "Unknown error"
-            sqlite3_free(errorPointer)
-            throw SQLiteError.executeFailed(message)
+        guard prepareResult == SQLITE_OK, let stmt = statement else {
+            throw SQLiteError.prepareFailed(errorMessage)
+        }
+
+        defer { sqlite3_finalize(stmt) }
+
+        try bindParameters(parameters, to: stmt)
+
+        let stepResult = sqlite3_step(stmt)
+        if stepResult != SQLITE_DONE && stepResult != SQLITE_ROW {
+            throw SQLiteError.executeFailed(errorMessage)
+        }
+    }
+
+    private func bindParameters(_ parameters: [Any?], to stmt: OpaquePointer) throws {
+        for (index, param) in parameters.enumerated() {
+            let sqlIndex = Int32(index + 1)
+
+            switch param {
+            case nil:
+                sqlite3_bind_null(stmt, sqlIndex)
+            case let value as String:
+                sqlite3_bind_text(stmt, sqlIndex, value, -1, unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+            case let value as Int:
+                sqlite3_bind_int64(stmt, sqlIndex, Int64(value))
+            case let value as Int64:
+                sqlite3_bind_int64(stmt, sqlIndex, value)
+            case let value as Double:
+                sqlite3_bind_double(stmt, sqlIndex, value)
+            case let value as Data:
+                _ = value.withUnsafeBytes { ptr in
+                    sqlite3_bind_blob(stmt, sqlIndex, ptr.baseAddress, Int32(value.count), unsafeBitCast(-1, to: sqlite3_destructor_type.self))
+                }
+            default:
+                throw SQLiteError.bindFailed("Unsupported parameter type at index \(index)")
+            }
         }
     }
 
@@ -123,6 +155,7 @@ enum SQLiteError: LocalizedError {
     case notOpen
     case prepareFailed(String)
     case executeFailed(String)
+    case bindFailed(String)
 
     var errorDescription: String? {
         switch self {
@@ -134,6 +167,8 @@ enum SQLiteError: LocalizedError {
             return "Failed to prepare statement: \(message)"
         case .executeFailed(let message):
             return "Failed to execute statement: \(message)"
+        case .bindFailed(let message):
+            return "Failed to bind parameter: \(message)"
         }
     }
 }
