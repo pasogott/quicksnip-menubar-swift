@@ -12,139 +12,137 @@ QuickSnip is a fully functional macOS menubar app with:
 
 ---
 
-## Phase 1: User Experience Polish
+## v1.1: Quick Wins
 
-### 1.1 Editor Integration
-- [ ] Open snippet in default markdown editor on double-click
-- [ ] Quick edit modal within the app
-- [ ] Syntax highlighting in preview
+### 1.1.1 Settings & Configuration
+- [ ] Version display in Settings window
+- [ ] Configurable snippets folder (default: `~/.snippets/`)
+- [ ] Folder picker with validation
 
-### 1.2 Search Improvements
-- [ ] Fuzzy search across shortcuts and content
-- [ ] Search history
-- [ ] Filter by category/folder
+### 1.1.2 Snippet Management
+- [ ] Snippet statistics: usage count, last used timestamp
+- [ ] Duplicate shortcut detection with warning
+- [ ] Sortierung: by name, date, usage frequency
+- [ ] Recent snippets quick-access list (last 5 used)
 
-### 1.3 Keyboard Navigation
-- [ ] Arrow keys to navigate snippet list
-- [ ] Enter to copy selected snippet
-- [ ] Global hotkey to open menubar popover
-
----
-
-## Phase 2: Advanced Variables
-
-### 2.1 New Variable Types
-- [ ] `{cursor}` - cursor position after paste
-- [ ] `{selected}` - currently selected text
-- [ ] `{input:prompt}` - prompt user for input
-- [ ] `{random:list}` - random selection from list
-
-### 2.2 Date/Time Formatting
-- [ ] `{date:YYYY-MM-DD}` - custom date format
-- [ ] `{time:HH:mm}` - custom time format
-- [ ] `{datetime:ISO}` - ISO 8601 format
-
-### 2.3 Transformations
-- [ ] `{clipboard:uppercase}` - text transformations
-- [ ] `{clipboard:lowercase}`
-- [ ] `{clipboard:trim}`
+### 1.1.3 Sync Improvements
+- [ ] 2-way sync: Text Replacement changes back to snippet files
+- [ ] Conflict detection and resolution UI
+- [ ] Sync status per snippet (in sync, local only, conflict)
 
 ---
 
-## Phase 3: Sync & Backup
+## v1.2: Shell Variables & Documentation
 
-### 3.1 iCloud Drive Sync
-- [ ] Option to store snippets in iCloud Drive
-- [ ] Conflict resolution for simultaneous edits
-- [ ] Offline support with sync on reconnect
+### 1.2.1 Shell Command Variables
+- [ ] `{shell:command}` - execute shell command and insert output
+- [ ] `{env:VAR}` - environment variable expansion
+- [ ] Examples:
+  - `{shell:date +%Y-%m-%d}` - formatted date via shell
+  - `{shell:whoami}` - current username
+  - `{shell:git branch --show-current}` - current git branch
+  - `{env:HOME}` - home directory
 
-### 3.2 Git Integration
-- [ ] Auto-commit changes to snippets repo
-- [ ] Push/pull from remote
-- [ ] Version history viewer
+### 1.2.2 Variable Documentation
+- [ ] In-app variable reference (accessible from Settings)
+- [ ] Variable syntax help in snippet editor
+- [ ] Example snippets with common variable patterns
+- [ ] Error messages for invalid variable syntax
 
-### 3.3 Backup & Restore
-- [ ] Scheduled automatic backups
-- [ ] Restore from backup UI
-- [ ] Export all settings and snippets
-
----
-
-## Phase 4: Collaboration
-
-### 4.1 Team Sharing
-- [ ] Shared snippet folders via file sharing
-- [ ] Read-only vs. editable permissions
-- [ ] Merge imported snippets intelligently
-
-### 4.2 Templates
-- [ ] Snippet templates for common use cases
-- [ ] Community template library (optional)
-- [ ] Template variables for customization
+### 1.2.3 Extended Built-in Variables
+- [ ] `{date:FORMAT}` - custom date format (strftime compatible)
+- [ ] `{time:FORMAT}` - custom time format
+- [ ] `{clipboard:transform}` - uppercase, lowercase, trim
+- [ ] `{uuid}` - generate UUID
+- [ ] `{random:min-max}` - random number in range
 
 ---
 
-## Phase 5: Platform Expansion
+## v1.3: UX Improvements
 
-### 5.1 iOS Companion App
-- [ ] View and copy snippets on iOS
-- [ ] iCloud sync between macOS and iOS app
-- [ ] Spotlight search integration
+### 1.3.1 Drag & Drop
+- [ ] Drag snippets between folders
+- [ ] Drag to reorder within folder
+- [ ] Drop files to import as snippets
 
-### 5.2 Alfred/Raycast Integration
-- [ ] Alfred workflow for snippet search
+### 1.3.2 Inline Editing
+- [ ] Edit snippet content directly in menubar
+- [ ] Edit shortcut inline
+- [ ] Quick toggle enabled/disabled
+
+### 1.3.3 Favorites & Organization
+- [ ] Star/favorite snippets
+- [ ] Favorites section at top of list
+- [ ] Color-coded categories
+- [ ] Snippet tags (additional to folders)
+
+### 1.3.4 Keyboard & Navigation
+- [ ] Global hotkey to open menubar (configurable)
+- [ ] Arrow keys to navigate list
+- [ ] Enter to copy, Cmd+Enter to edit
+- [ ] Type to filter (instant search)
+
+---
+
+## v1.4: Integrations
+
+### 1.4.1 URL Scheme
+- [ ] `quicksnip://copy?shortcut=;sig` - copy snippet
+- [ ] `quicksnip://open` - open menubar
+- [ ] `quicksnip://sync` - trigger sync
+- [ ] `quicksnip://new?content=...` - create snippet
+
+### 1.4.2 Shortcuts.app
+- [ ] "Copy Snippet" action
+- [ ] "List Snippets" action
+- [ ] "Create Snippet" action
+- [ ] "Sync Snippets" action
+
+### 1.4.3 Third-Party Tools
+- [ ] Alfred workflow
 - [ ] Raycast extension
-- [ ] Keyboard Maestro plugin
+- [ ] AppleScript dictionary
+- [ ] Spotlight indexing for snippets
 
 ---
 
-## Phase 6: Developer Features
+## Future Phases
 
-### 6.1 Scripting Support
-- [ ] Shell script snippets with execution
-- [ ] AppleScript integration
-- [ ] JavaScript snippet evaluation
+### Phase 5: Platform Expansion
+- iOS Companion App with iCloud sync
+- Spotlight search integration
 
-### 6.2 API & Automation
-- [ ] Local HTTP API for snippet access
-- [ ] CLI tool for terminal access
-- [ ] Shortcuts app integration
+### Phase 6: Developer Features
+- Shell script snippets with execution
+- Local HTTP API for automation
+- CLI tool for terminal access
 
----
-
-## Phase 7: Distribution & Trust
-
-### 7.1 Code Signing
-- [ ] Apple Developer certificate
-- [ ] Notarization for Gatekeeper
-- [ ] Automatic update mechanism
-
-### 7.2 App Store
-- [ ] Sandboxed version with limited features
-- [ ] App Store listing
-- [ ] In-app purchase for pro features (optional)
+### Phase 7: Distribution
+- Apple Developer certificate & notarization
+- Automatic update mechanism (Sparkle)
+- Optional App Store version
 
 ---
 
-## Backlog (Community Requests)
+## Backlog
 
-Items to consider based on user feedback:
-- [ ] Snippet statistics (usage count, last used)
-- [ ] Dark/light mode toggle
-- [ ] Custom menubar icon
-- [ ] Snippet expiration dates
-- [ ] Encrypted snippets
+Items for future consideration:
+- [ ] Encrypted/password-protected snippets
+- [ ] Snippet expiration dates (auto-disable)
 - [ ] Multi-language snippet variants
+- [ ] Team sharing via shared folders
+- [ ] Git integration for version history
+- [ ] Snippet templates library
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to contribute to QuickSnip.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for how to contribute.
 
-To propose a new feature:
+To propose a feature:
 1. Open a GitHub issue with the `enhancement` label
-2. Describe the use case and expected behavior
+2. Describe use case and expected behavior
 3. Discuss implementation approach
 
 ---
