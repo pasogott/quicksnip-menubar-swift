@@ -64,7 +64,21 @@ Pascal
 - macOS 15.0 (Sequoia) or later
 - Full Disk Access permission (for Text Replacement sync)
 
+### First Launch (Gatekeeper)
+
+QuickSnip is not signed with an Apple Developer certificate. On first launch, macOS will show a warning saying it cannot verify the app. To open the app:
+
+1. Click "Done" on the warning dialog
+2. Open System Settings > Privacy & Security
+3. Scroll down to find "QuickSnip.app was blocked"
+4. Click "Open Anyway"
+5. Confirm by clicking "Open" in the next dialog
+
+This only needs to be done once.
+
 ### Granting Full Disk Access
+
+After opening the app, grant Full Disk Access for Text Replacement sync:
 
 1. Open System Settings > Privacy & Security > Full Disk Access
 2. Click the + button
