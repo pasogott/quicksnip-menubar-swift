@@ -142,6 +142,16 @@ final class SQLiteDatabase {
         return firstValue as? T
     }
 
+    func checkpoint() throws {
+        guard let database = db else {
+            throw SQLiteError.notOpen
+        }
+        let result = sqlite3_wal_checkpoint_v2(database, nil, SQLITE_CHECKPOINT_PASSIVE, nil, nil)
+        if result != SQLITE_OK && result != SQLITE_BUSY {
+            throw SQLiteError.executeFailed("Checkpoint failed: \(errorMessage)")
+        }
+    }
+
     private var errorMessage: String {
         if let error = sqlite3_errmsg(db) {
             return String(cString: error)
