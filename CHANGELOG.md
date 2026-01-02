@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.3] - 2026-01-02
+
+### Added
+- GitHub social preview image for repository branding
+- Assets folder with app icon and social preview images
+
 ## [1.0.2] - 2026-01-02
 
 ### Fixed
