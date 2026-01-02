@@ -120,9 +120,10 @@ struct TextReplacementService: TextReplacementServiceProtocol {
     }
 
     private func updateGlobalPreferences(_ snippets: [Snippet]) {
-        let defaults = UserDefaults.standard
         let key = "NSUserDictionaryReplacementItems"
-        var replacements = defaults.array(forKey: key) as? [[String: Any]] ?? []
+        let defaults = UserDefaults.standard
+        var globalDomain = defaults.persistentDomain(forName: UserDefaults.globalDomain) ?? [:]
+        var replacements = globalDomain[key] as? [[String: Any]] ?? []
         let existingShortcuts = Set(replacements.compactMap { $0["replace"] as? String })
 
         for snippet in snippets where snippet.enabled {
@@ -145,7 +146,8 @@ struct TextReplacementService: TextReplacementServiceProtocol {
             }
         }
 
-        defaults.set(replacements, forKey: key)
+        globalDomain[key] = replacements
+        defaults.setPersistentDomain(globalDomain, forName: UserDefaults.globalDomain)
     }
 }
 
