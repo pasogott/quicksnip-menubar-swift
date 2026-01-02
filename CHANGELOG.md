@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.0.2] - 2026-01-02
+
+### Fixed
+- App crash on launch due to Swift concurrency issue in NotificationService
+  - Added @preconcurrency import for UserNotifications
+  - Made requestAuthorization nonisolated to avoid actor isolation issues
+
+### Infrastructure
+- Fixed Homebrew Cask auto-update workflow (replaced broken external action with custom script)
+
 ## [1.0.1] - 2026-01-02
 
 ### Fixed

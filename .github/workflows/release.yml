@@ -51,8 +51,37 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update Homebrew Cask
-        uses: macauley/action-homebrew-bump-cask@v1
-        with:
-          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
-          tap: pasogott/tap
-          cask: quicksnip
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          SHA256=$(shasum -a 256 QuickSnip/build/export/QuickSnip.dmg | awk '{print $1}')
+
+          git clone https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/pasogott/homebrew-tap.git /tmp/homebrew-tap
+          cd /tmp/homebrew-tap
+
+          printf 'cask "quicksnip" do
+  version "%s"
+  sha256 "%s"
+
+  url "https://github.com/pasogott/quicksnip-menubar-swift/releases/download/v#{version}/QuickSnip.dmg"
+  name "QuickSnip"
+  desc "Menubar app for managing text snippets with macOS Text Replacement sync"
+  homepage "https://github.com/pasogott/quicksnip-menubar-swift"
+
+  depends_on macos: ">= :sequoia"
+
+  app "QuickSnip.app"
+
+  zap trash: [
+    "~/.snippets",
+    "~/Library/Preferences/com.pasogott.QuickSnip.plist",
+  ]
+end
+' "$VERSION" "$SHA256" > Casks/quicksnip.rb
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add Casks/quicksnip.rb
+          git commit -m "Update quicksnip to ${VERSION}"
+          git push origin main
