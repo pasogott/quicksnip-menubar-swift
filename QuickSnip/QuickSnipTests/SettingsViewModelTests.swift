@@ -146,6 +146,8 @@ private final class TrackingTextReplacementService: TextReplacementServiceProtoc
         SyncResult(inserted: 0, updated: 0)
     }
 
+    func deleteReplacement(shortcut: String) throws {}
+
     func openFullDiskAccessSettings() {
         onOpenSettings()
     }

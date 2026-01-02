@@ -222,6 +222,10 @@ struct MenuBarContentView: View {
 
             Spacer()
 
+            Text("v\(appVersion)")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
+
             SettingsLink {
                 Image(systemName: "gear")
             }
@@ -235,6 +239,10 @@ struct MenuBarContentView: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
+    }
+
+    private var appVersion: String {
+        Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "?"
     }
 }
 

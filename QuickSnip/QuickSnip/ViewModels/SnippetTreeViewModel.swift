@@ -93,6 +93,9 @@ final class SnippetTreeViewModel {
 
     func deleteSnippet(_ snippet: Snippet) {
         perform {
+            // Remove from Text Replacement (DB + plist) for iCloud sync
+            try? textReplacementService.deleteReplacement(shortcut: snippet.shortcut)
+            // Delete the markdown file
             try fileService.deleteSnippet(snippet)
             loadSnippets()
         }
@@ -100,6 +103,11 @@ final class SnippetTreeViewModel {
 
     func deleteFolder(_ folder: SnippetFolder) {
         perform {
+            // Remove all snippets in folder from Text Replacement for iCloud sync
+            for snippet in folder.allSnippets {
+                try? textReplacementService.deleteReplacement(shortcut: snippet.shortcut)
+            }
+            // Delete the folder and all contents
             try fileService.deleteFolder(folder)
             loadSnippets()
         }

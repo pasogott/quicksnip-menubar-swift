@@ -18,5 +18,6 @@ protocol TextReplacementServiceProtocol: Sendable {
     var hasAccess: Bool { get }
 
     func syncSnippets(_ snippets: [Snippet]) throws -> SyncResult
+    func deleteReplacement(shortcut: String) throws
     func openFullDiskAccessSettings()
 }
