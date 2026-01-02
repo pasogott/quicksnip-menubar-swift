@@ -1,5 +1,5 @@
 import Foundation
-import UserNotifications
+@preconcurrency import UserNotifications
 
 @MainActor
 final class NotificationService {
@@ -11,8 +11,10 @@ final class NotificationService {
         self.center = center
     }
 
-    func requestAuthorization() {
-        center.requestAuthorization(options: [.alert, .sound]) { _, _ in }
+    nonisolated func requestAuthorization() {
+        Task {
+            try? await UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound])
+        }
     }
 
     func showSuccess(title: String, message: String) {
