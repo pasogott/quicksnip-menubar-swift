@@ -71,25 +71,27 @@ jobs:
           git clone https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/pasogott/homebrew-tap.git /tmp/homebrew-tap
           cd /tmp/homebrew-tap
 
-          printf 'cask "quicksnip" do
-  version "%s"
-  sha256 "%s"
+          cat > Casks/quicksnip.rb << CASKEOF
+          cask "quicksnip" do
+            version "${VERSION}"
+            sha256 "${SHA256}"
 
-  url "https://github.com/pasogott/quicksnip-menubar-swift/releases/download/v#{version}/QuickSnip.dmg"
-  name "QuickSnip"
-  desc "Menubar app for managing text snippets with macOS Text Replacement sync"
-  homepage "https://github.com/pasogott/quicksnip-menubar-swift"
+            url "https://github.com/pasogott/quicksnip-menubar-swift/releases/download/v#{version}/QuickSnip.dmg"
+            name "QuickSnip"
+            desc "Menubar app for managing text snippets with macOS Text Replacement sync"
+            homepage "https://github.com/pasogott/quicksnip-menubar-swift"
 
-  depends_on macos: ">= :sequoia"
+            depends_on macos: ">= :sequoia"
 
-  app "QuickSnip.app"
+            app "QuickSnip.app"
 
-  zap trash: [
-    "~/.snippets",
-    "~/Library/Preferences/com.pasogott.QuickSnip.plist",
-  ]
-end
-' "$VERSION" "$SHA256" > Casks/quicksnip.rb
+            zap trash: [
+              "~/.snippets",
+              "~/Library/Preferences/com.pasogott.QuickSnip.plist",
+            ]
+          end
+          CASKEOF
+          sed -i '' 's/^          //' Casks/quicksnip.rb
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
