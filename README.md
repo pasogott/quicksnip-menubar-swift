@@ -1,6 +1,19 @@
 # QuickSnip
 
-A native macOS menubar app for managing text snippets with team sharing capabilities.
+A native macOS menubar app for managing text snippets with macOS Text Replacement sync.
+
+## Installation
+
+### Homebrew (recommended)
+
+```bash
+brew tap pasogott/tap
+brew install --cask quicksnip
+```
+
+### Manual Download
+
+Download the latest DMG from [Releases](https://github.com/pasogott/quicksnip-menubar-swift/releases).
 
 ## Overview
 
