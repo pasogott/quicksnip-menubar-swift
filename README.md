@@ -93,6 +93,10 @@ QuickSnip syncs your snippets to macOS Text Replacement by:
 2. Updating GlobalPreferences.plist for immediate local activation
 3. Restarting the keyboard service daemon
 
+When you delete a snippet, QuickSnip:
+1. Marks the entry as deleted (`ZWASDELETED=1`) for iCloud sync propagation
+2. Removes the entry from GlobalPreferences.plist for immediate local deactivation
+
 This enables your snippets to sync to all your Apple devices via iCloud.
 
 **Why this approach?** Apple provides no public API for Text Replacement. Alternatives like InputMethodKit don't sync to iOS. See the [Architecture Decision Record](QuickSnip/QuickSnip/Services/TextReplacementService.swift) for details.

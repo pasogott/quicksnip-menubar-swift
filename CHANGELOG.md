@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Added
+- Display app version in menubar footer (#78)
+
+### Fixed
+- Deleted snippets now properly removed from System Settings Text Replacement (#78)
+  - Implements soft delete (ZWASDELETED=1) for iCloud sync propagation to iOS
+  - Removes entries from GlobalPreferences.plist for immediate local deactivation
+  - Folder deletion now removes all contained snippets from Text Replacement
+
 ## [1.0.4] - 2026-01-02
 
 ### Added
