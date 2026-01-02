@@ -1,6 +1,41 @@
 import Foundation
 import AppKit
 
+// MARK: - Architecture Decision Record
+//
+// Why we manipulate system databases directly instead of using official Apple APIs:
+//
+// The core feature of QuickSnip is syncing snippets to iOS via iCloud. This requires
+// writing to macOS Text Replacement, which has NO public API.
+//
+// Alternatives considered:
+//
+// 1. InputMethodKit - Apple's official text input API
+//    - Requires separate Input Method bundle that users must manually enable
+//    - Does NOT sync to iOS - completely separate from Text Replacement
+//    - Complex implementation (full IMKit architecture)
+//
+// 2. Event Taps (CGEvent) - Keyboard interception
+//    - Requires Input Monitoring permission (more intrusive than FDA)
+//    - Does NOT sync to iOS
+//    - Must run constantly in background, higher battery impact
+//
+// 3. NSSpellChecker.learnWord() - Only for spell checking, not text replacement
+//
+// Current approach (direct database access):
+// - Writes to ~/Library/KeyboardServices/TextReplacements.db (for iCloud sync)
+// - Updates .GlobalPreferences.plist (for immediate local activation)
+// - Restarts keyboardservicesd daemon
+//
+// This is the same approach used by Keyboard Maestro and other established tools.
+// The schema has been stable across macOS versions.
+//
+// Risks: Undocumented API could change. Mitigation: Monitor macOS betas.
+//
+// References:
+// - https://forum.keyboardmaestro.com/t/native-macos-text-replacement-adding-records/17112
+// - https://sqlite.org/wal.html (WAL checkpoint requirement)
+
 struct TextReplacement: Equatable {
     let shortcut: String
     let phrase: String
@@ -119,6 +154,8 @@ struct TextReplacementService: TextReplacementServiceProtocol {
         try? task.run()
     }
 
+    /// Updates GlobalPreferences.plist for immediate local activation.
+    /// The database handles iCloud sync, but macOS reads from plist for immediate use.
     private func updateGlobalPreferences(_ snippets: [Snippet]) {
         let key = "NSUserDictionaryReplacementItems"
         let defaults = UserDefaults.standard

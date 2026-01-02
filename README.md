@@ -11,6 +11,12 @@ brew tap pasogott/tap
 brew install --cask quicksnip
 ```
 
+To update:
+
+```bash
+brew upgrade --cask quicksnip
+```
+
 ### Manual Download
 
 Download the latest DMG from [Releases](https://github.com/pasogott/quicksnip-menubar-swift/releases).
@@ -23,7 +29,7 @@ QuickSnip stores snippets as markdown files with YAML frontmatter in `~/.snippet
 
 - **Menubar Tree View** - Recursive folder/snippet hierarchy
 - **File Watcher** - Auto-reload on external edits
-- **Text Replacement Sync** - Import to macOS native system (syncs to iOS via iCloud)
+- **Text Replacement Sync** - Syncs to macOS native system and iOS via iCloud
 - **Import/Export** - Share snippets as .zip files
 - **Click to Copy** - Click snippet to copy, long-press to preview
 - **Variable Support** - `{date}`, `{time}`, `{clipboard}` expanded when copied
@@ -58,30 +64,53 @@ Pascal
 - macOS 15.0 (Sequoia) or later
 - Full Disk Access permission (for Text Replacement sync)
 
+### Granting Full Disk Access
+
+1. Open System Settings > Privacy & Security > Full Disk Access
+2. Click the + button
+3. Navigate to /Applications and select QuickSnip
+4. Restart QuickSnip
+
+## How It Works
+
+QuickSnip syncs your snippets to macOS Text Replacement by:
+
+1. Writing to the system database (`~/Library/KeyboardServices/TextReplacements.db`)
+2. Updating GlobalPreferences.plist for immediate local activation
+3. Restarting the keyboard service daemon
+
+This enables your snippets to sync to all your Apple devices via iCloud.
+
+**Why this approach?** Apple provides no public API for Text Replacement. Alternatives like InputMethodKit don't sync to iOS. See the [Architecture Decision Record](QuickSnip/QuickSnip/Services/TextReplacementService.swift) for details.
+
 ## Development
 
-### Prerequisites
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
-- Xcode 16.0+
-- Swift 6.0+
-
-### Building
+### Quick Start
 
 ```bash
-cd QuickSnip
-xcodebuild -scheme QuickSnip -configuration Release
+# Clone
+git clone https://github.com/pasogott/quicksnip-menubar-swift.git
+cd quicksnip-menubar-swift
+
+# Build
+cd QuickSnip && xcodebuild -scheme QuickSnip -configuration Debug
+
+# Test
+xcodebuild test -scheme QuickSnip -destination 'platform=macOS'
 ```
 
 ### Project Structure
 
 ```
 QuickSnip/
-├── QuickSnipApp.swift
-├── Models/
-├── Services/
-├── ViewModels/
-├── Views/
-└── Resources/
+├── QuickSnipApp.swift          # @main, MenuBarExtra scene
+├── Models/                     # Snippet, SnippetFolder, SyncStatus
+├── Services/                   # File I/O, parsing, sync, variables
+├── ViewModels/                 # SnippetTreeViewModel, SettingsViewModel
+├── Views/                      # SwiftUI views
+└── Resources/                  # Assets
 ```
 
 ## License
