@@ -90,6 +90,7 @@ struct TextReplacementService: TextReplacementServiceProtocol {
 
         try db.checkpoint()
         touchDatabase()
+        updateGlobalPreferences(snippets)
         restartKeyboardService()
 
         return SyncResult(inserted: inserted, updated: updated)
@@ -116,6 +117,35 @@ struct TextReplacementService: TextReplacementServiceProtocol {
         task.executableURL = URL(fileURLWithPath: "/usr/bin/killall")
         task.arguments = ["keyboardservicesd"]
         try? task.run()
+    }
+
+    private func updateGlobalPreferences(_ snippets: [Snippet]) {
+        let defaults = UserDefaults.standard
+        let key = "NSUserDictionaryReplacementItems"
+        var replacements = defaults.array(forKey: key) as? [[String: Any]] ?? []
+        let existingShortcuts = Set(replacements.compactMap { $0["replace"] as? String })
+
+        for snippet in snippets where snippet.enabled {
+            if existingShortcuts.contains(snippet.shortcut) {
+                // Update existing entry
+                if let index = replacements.firstIndex(where: { ($0["replace"] as? String) == snippet.shortcut }) {
+                    replacements[index] = [
+                        "on": 1,
+                        "replace": snippet.shortcut,
+                        "with": snippet.content
+                    ]
+                }
+            } else {
+                // Add new entry
+                replacements.append([
+                    "on": 1,
+                    "replace": snippet.shortcut,
+                    "with": snippet.content
+                ])
+            }
+        }
+
+        defaults.set(replacements, forKey: key)
     }
 }
 
