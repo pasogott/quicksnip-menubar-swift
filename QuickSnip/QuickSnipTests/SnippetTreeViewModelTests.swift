@@ -40,10 +40,15 @@ final class MockTextReplacementService: TextReplacementServiceProtocol, @uncheck
     var hasAccess: Bool = true
     var syncError: Error?
     var syncResult = SyncResult(inserted: 0, updated: 0)
+    var deletedShortcuts: [String] = []
 
     func syncSnippets(_ snippets: [Snippet]) throws -> SyncResult {
         if let error = syncError { throw error }
         return syncResult
+    }
+
+    func deleteReplacement(shortcut: String) throws {
+        deletedShortcuts.append(shortcut)
     }
 
     func openFullDiskAccessSettings() {}

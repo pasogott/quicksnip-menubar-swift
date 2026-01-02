@@ -131,6 +131,25 @@ struct TextReplacementService: TextReplacementServiceProtocol {
         return SyncResult(inserted: inserted, updated: updated)
     }
 
+    func deleteReplacement(shortcut: String) throws {
+        let db = SQLiteDatabase(url: Self.databaseURL)
+        try db.open()
+        defer { db.close() }
+
+        // Mark as deleted in database for iCloud sync (soft delete / tombstone)
+        // ZWASDELETED = 1 triggers CloudKit to propagate deletion to other devices
+        try db.execute("""
+            UPDATE ZTEXTREPLACEMENTENTRY
+            SET ZWASDELETED = 1, ZNEEDSSAVETOCLOUD = 1, ZTIMESTAMP = ?
+            WHERE ZSHORTCUT = ?
+        """, parameters: [currentTimestamp(), shortcut])
+
+        try db.checkpoint()
+        touchDatabase()
+        removeFromGlobalPreferences(shortcut: shortcut)
+        restartKeyboardService()
+    }
+
     func openFullDiskAccessSettings() {
         let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_AllFiles")!
         NSWorkspace.shared.open(url)
@@ -182,6 +201,19 @@ struct TextReplacementService: TextReplacementServiceProtocol {
                 ])
             }
         }
+
+        globalDomain[key] = replacements
+        defaults.setPersistentDomain(globalDomain, forName: UserDefaults.globalDomain)
+    }
+
+    /// Removes a shortcut from GlobalPreferences.plist for immediate local deactivation.
+    private func removeFromGlobalPreferences(shortcut: String) {
+        let key = "NSUserDictionaryReplacementItems"
+        let defaults = UserDefaults.standard
+        var globalDomain = defaults.persistentDomain(forName: UserDefaults.globalDomain) ?? [:]
+        var replacements = globalDomain[key] as? [[String: Any]] ?? []
+
+        replacements.removeAll { ($0["replace"] as? String) == shortcut }
 
         globalDomain[key] = replacements
         defaults.setPersistentDomain(globalDomain, forName: UserDefaults.globalDomain)
