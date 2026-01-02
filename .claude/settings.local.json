@@ -11,7 +11,13 @@
       "Bash(gh issue close:*)",
       "Bash(xcodebuild:*)",
       "Bash(gh issue list:*)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(git branch:*)",
+      "Bash(git tag:*)",
+      "Bash(gh run:*)",
+      "Bash(gh release create v1.0.0 --title \"QuickSnip v1.0.0\" --notes \"$\\(cat <<''EOF''\n## QuickSnip v1.0.0 - Initial Release\n\n### Features\n- Markdown-based snippet storage in `~/.snippets/`\n- Sync to macOS Text Replacement \\(syncs to iOS via iCloud\\)\n- Variable expansion: `{date}`, `{time}`, `{clipboard}`\n- Import/export snippets as zip archives\n- Folder organization with nested snippets\n- Live file watching with auto-reload\n- Search across shortcuts and content\n- Keyboard shortcuts: Cmd+N \\(new snippet\\), Cmd+Shift+N \\(new folder\\), Cmd+R \\(sync\\)\n\n### Requirements\n- macOS 15.0+ \\(Sequoia\\)\n- Full Disk Access permission for Text Replacement sync\n\n### Quality\n- 150 tests with 93% test-to-source ratio\n- Full SOLID compliance\nEOF\n\\)\")",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:til.simonwillison.net)"
     ]
   }
 }

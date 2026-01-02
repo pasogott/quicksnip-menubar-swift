@@ -14,7 +14,11 @@ struct TextReplacementService: TextReplacementServiceProtocol {
     }()
 
     var hasAccess: Bool {
-        FileManager.default.isReadableFile(atPath: Self.databaseURL.path)
+        guard let fileHandle = try? FileHandle(forWritingTo: Self.databaseURL) else {
+            return false
+        }
+        try? fileHandle.close()
+        return true
     }
 
     func getCurrentReplacements() throws -> [TextReplacement] {
