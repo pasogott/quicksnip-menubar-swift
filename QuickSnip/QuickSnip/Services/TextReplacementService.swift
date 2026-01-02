@@ -14,11 +14,15 @@ struct TextReplacementService: TextReplacementServiceProtocol {
     }()
 
     var hasAccess: Bool {
-        guard let fileHandle = try? FileHandle(forWritingTo: Self.databaseURL) else {
+        let testURL = Self.databaseURL.deletingLastPathComponent()
+            .appendingPathComponent(".quicksnip_fda_test")
+        do {
+            try "test".write(to: testURL, atomically: true, encoding: .utf8)
+            try FileManager.default.removeItem(at: testURL)
+            return true
+        } catch {
             return false
         }
-        try? fileHandle.close()
-        return true
     }
 
     func getCurrentReplacements() throws -> [TextReplacement] {
@@ -50,6 +54,9 @@ struct TextReplacementService: TextReplacementServiceProtocol {
 
         var inserted = 0
         var updated = 0
+        var maxPK: Int64 = try db.queryScalar(
+            "SELECT MAX(Z_PK) FROM ZTEXTREPLACEMENTENTRY"
+        ) ?? 0
 
         for snippet in snippets where snippet.enabled {
             let phrase = snippet.content
@@ -58,25 +65,32 @@ struct TextReplacementService: TextReplacementServiceProtocol {
             if existingShortcuts.contains(shortcut) {
                 try db.execute("""
                     UPDATE ZTEXTREPLACEMENTENTRY
-                    SET ZPHRASE = ?, ZTIMESTAMP = ?
+                    SET ZPHRASE = ?, ZTIMESTAMP = ?, ZNEEDSSAVETOCLOUD = 1
                     WHERE ZSHORTCUT = ?
                 """, parameters: [phrase, currentTimestamp(), shortcut])
                 updated += 1
             } else {
-                let maxZ: Int64 = try db.queryScalar("""
-                    SELECT MAX(Z_PK) FROM ZTEXTREPLACEMENTENTRY
-                """) ?? 0
-
+                maxPK += 1
+                let uniqueName = UUID().uuidString
                 try db.execute("""
                     INSERT INTO ZTEXTREPLACEMENTENTRY
-                    (Z_PK, Z_ENT, Z_OPT, ZSHORTCUT, ZPHRASE, ZTIMESTAMP, ZWASDELETED)
-                    VALUES (?, 1, 1, ?, ?, ?, 0)
-                """, parameters: [maxZ + 1, shortcut, phrase, currentTimestamp()])
+                    (Z_PK, Z_ENT, Z_OPT, ZNEEDSSAVETOCLOUD, ZWASDELETED,
+                     ZTIMESTAMP, ZPHRASE, ZSHORTCUT, ZUNIQUENAME)
+                    VALUES (?, 1, 1, 1, 0, ?, ?, ?, ?)
+                """, parameters: [maxPK, currentTimestamp(), phrase, shortcut, uniqueName])
                 inserted += 1
             }
         }
 
+        if inserted > 0 {
+            try db.execute("""
+                UPDATE Z_PRIMARYKEY SET Z_MAX = ? WHERE Z_NAME = 'TextReplacementEntry'
+            """, parameters: [maxPK])
+        }
+
+        try db.checkpoint()
         touchDatabase()
+        restartKeyboardService()
 
         return SyncResult(inserted: inserted, updated: updated)
     }
@@ -95,6 +109,13 @@ struct TextReplacementService: TextReplacementServiceProtocol {
             [.modificationDate: Date()],
             ofItemAtPath: Self.databaseURL.path
         )
+    }
+
+    private func restartKeyboardService() {
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/usr/bin/killall")
+        task.arguments = ["keyboardservicesd"]
+        try? task.run()
     }
 }
 
